@@ -1,0 +1,65 @@
+
+@import "../login/login.component.css";
+
+.verification-loader,
+.verification-success,
+.verification-pending {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.spinner-large {
+  display: inline-block;
+  width: 3rem;
+  height: 3rem;
+  margin: 1rem auto;
+  border: 3px solid rgba(74, 108, 247, 0.3);
+  border-top-color: #4a6cf7;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.check-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  background-color: rgba(40, 167, 69, 0.1);
+  border-radius: 50%;
+
+  svg {
+    width: 50px;
+    height: 50px;
+    color: #28a745;
+  }
+}
+
+.verification-success {
+  h2 {
+    color: #28a745;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+  }
+
+  .btn {
+    margin-top: 1rem;
+  }
+}
+
+.verification-pending {
+  h2 {
+    color: #4a6cf7;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+  }
+}

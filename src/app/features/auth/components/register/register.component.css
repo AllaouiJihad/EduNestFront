@@ -1,0 +1,59 @@
+
+@import "../login/login.component.css";
+
+.name-group {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0;
+
+  @media (max-width: 576px) {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .form-group {
+    flex: 1;
+  }
+}
+
+.terms {
+  margin-top: 1rem;
+
+  .checkbox {
+    display: flex;
+    align-items: flex-start;
+
+    input {
+      margin-top: 0.25rem;
+      margin-right: 0.5rem;
+    }
+
+    label {
+      margin-bottom: 0;
+      font-weight: normal;
+      font-size: 0.875rem;
+      line-height: 1.4;
+
+      a {
+        color: #4a6cf7;
+        text-decoration: none;
+        transition: color 0.2s;
+
+        &:hover {
+          color: #2c4bdf;
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  .form-error {
+    color: #dc3545;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+  }
+}
+
+.auth-card {
+  max-width: 500px;
+}

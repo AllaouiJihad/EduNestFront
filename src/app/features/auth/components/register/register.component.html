@@ -1,0 +1,106 @@
+<!-- src/app/features/auth/components/register/register.component.html -->
+
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <img src="assets/images/logo.png" alt="EduNest Logo" class="logo" />
+      <h1>Inscription</h1>
+      <p>Créez votre compte pour rejoindre la communauté EduNest</p>
+    </div>
+
+    <app-alert *ngIf="errorMessage" type="error" [message]="errorMessage"></app-alert>
+    <app-alert *ngIf="successMessage" type="success" [message]="successMessage"></app-alert>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <div class="name-group">
+        <div class="form-group">
+          <label for="firstName">Prénom</label>
+          <input
+            type="text"
+            id="firstName"
+            formControlName="firstName"
+            class="form-control"
+            [ngClass]="{ 'is-invalid': submitted && f['firstName'].errors }"
+            placeholder="Votre prénom"
+          />
+          <app-form-errors [control]="f['firstName']" [submitted]="submitted"></app-form-errors>
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Nom</label>
+          <input
+            type="text"
+            id="lastName"
+            formControlName="lastName"
+            class="form-control"
+            [ngClass]="{ 'is-invalid': submitted && f['lastName'].errors }"
+            placeholder="Votre nom"
+          />
+          <app-form-errors [control]="f['lastName']" [submitted]="submitted"></app-form-errors>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          class="form-control"
+          [ngClass]="{ 'is-invalid': submitted && f['email'].errors }"
+          placeholder="Votre adresse email"
+        />
+        <app-form-errors [control]="f['email']" [submitted]="submitted"></app-form-errors>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          class="form-control"
+          [ngClass]="{ 'is-invalid': submitted && f['password'].errors }"
+          placeholder="Créez un mot de passe"
+        />
+        <app-form-errors [control]="f['password']" [submitted]="submitted"></app-form-errors>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirmer le mot de passe</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          formControlName="confirmPassword"
+          class="form-control"
+          [ngClass]="{ 'is-invalid': submitted && f['confirmPassword'].errors }"
+          placeholder="Confirmez votre mot de passe"
+        />
+        <app-form-errors [control]="f['confirmPassword']" [submitted]="submitted"></app-form-errors>
+      </div>
+
+      <div class="form-group terms">
+        <div class="checkbox">
+          <input type="checkbox" id="acceptTerms" formControlName="acceptTerms">
+          <label for="acceptTerms">
+            J'accepte les <a href="#" target="_blank">conditions d'utilisation</a> et la <a href="#" target="_blank">politique de confidentialité</a>
+          </label>
+        </div>
+        <div *ngIf="submitted && f['acceptTerms'].errors" class="form-error">
+          Vous devez accepter les conditions pour vous inscrire.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary" [disabled]="loading">
+          <span *ngIf="loading" class="spinner"></span>
+          S'inscrire
+        </button>
+      </div>
+
+      <div class="auth-footer">
+        <p>Vous avez déjà un compte ? <a routerLink="/auth/login">Connectez-vous</a></p>
+      </div>
+    </form>
+  </div>
+</div>

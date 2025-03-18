@@ -1,0 +1,62 @@
+<!-- src/app/features/auth/components/login/login.component.html -->
+
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <img src="assets/images/logo.png" alt="EduNest Logo" class="logo" />
+      <h1>Connexion</h1>
+      <p>Connectez-vous pour accéder à votre espace personnel</p>
+    </div>
+
+    <app-alert *ngIf="errorMessage" type="error" [message]="errorMessage"></app-alert>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          class="form-control"
+          [ngClass]="{ 'is-invalid': submitted && f['email'].errors }"
+          placeholder="Votre adresse email"
+        />
+        <app-form-errors [control]="f['email']" [submitted]="submitted"></app-form-errors>
+      </div>
+
+      <div class="form-group">
+        <div class="password-label">
+          <label for="password">Mot de passe</label>
+          <a routerLink="/auth/forgot-password" class="forgot-password">Mot de passe oublié ?</a>
+        </div>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          class="form-control"
+          [ngClass]="{ 'is-invalid': submitted && f['password'].errors }"
+          placeholder="Votre mot de passe"
+        />
+        <app-form-errors [control]="f['password']" [submitted]="submitted"></app-form-errors>
+      </div>
+
+      <div class="form-group remember-me">
+        <div class="checkbox">
+          <input type="checkbox" id="rememberMe" formControlName="rememberMe">
+          <label for="rememberMe">Se souvenir de moi</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary" [disabled]="loading">
+          <span *ngIf="loading" class="spinner"></span>
+          Connexion
+        </button>
+      </div>
+
+      <div class="auth-footer">
+        <p>Vous n'avez pas de compte ? <a routerLink="/auth/register">Inscrivez-vous</a></p>
+      </div>
+    </form>
+  </div>
+</div>

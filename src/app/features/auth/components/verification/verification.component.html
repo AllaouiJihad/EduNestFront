@@ -1,0 +1,39 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <img src="assets/images/logo.png" alt="EduNest Logo" class="logo" />
+      <h1>Vérification du compte</h1>
+    </div>
+
+    <div *ngIf="loading" class="verification-loader">
+      <div class="spinner-large"></div>
+      <p>Vérification en cours...</p>
+    </div>
+
+    <div *ngIf="!loading">
+      <app-alert *ngIf="errorMessage" type="error" [message]="errorMessage"></app-alert>
+
+      <div *ngIf="verified" class="verification-success">
+        <div class="check-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
+        <h2>Compte vérifié avec succès !</h2>
+        <p>Votre compte a été activé. Vous allez être redirigé vers la page de connexion dans quelques secondes.</p>
+        <a routerLink="/auth/login" class="btn btn-primary">Se connecter maintenant</a>
+      </div>
+
+      <div *ngIf="!verified && !errorMessage" class="verification-pending">
+        <h2>Vérification de votre compte</h2>
+        <p>Nous sommes en train de vérifier votre compte. Veuillez patienter...</p>
+        <div class="spinner-large"></div>
+      </div>
+    </div>
+
+    <div class="auth-footer" *ngIf="!loading && errorMessage">
+      <p><a routerLink="/auth/login">Retour à la connexion</a></p>
+    </div>
+  </div>
+</div>

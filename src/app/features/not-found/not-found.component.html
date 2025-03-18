@@ -1,0 +1,56 @@
+<!-- src/app/features/not-found/not-found.component.html -->
+
+<div class="not-found-container">
+  <div class="not-found-content">
+    <div class="logo-container">
+      <img src="assets/images/logo.png" alt="EduNest Logo" class="logo">
+    </div>
+
+    <div class="error-code">404</div>
+
+    <h1>Page non trouvée</h1>
+
+    <p>Oups ! La page que vous recherchez n'existe pas ou a été déplacée.</p>
+
+    <div class="actions">
+      <a routerLink="/" class="btn btn-primary">Retour à l'accueil</a>
+      <a routerLink="/auth/login" class="btn btn-outline">Connexion</a>
+    </div>
+
+    <div class="illustration">
+      <svg viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg">
+        <!-- Fond de ciel -->
+        <rect width="500" height="300" fill="#f5f7fa" />
+
+        <!-- Soleil -->
+        <circle cx="400" cy="70" r="40" fill="#ffeb3b" opacity="0.7" />
+
+        <!-- Nuages -->
+        <ellipse cx="120" cy="80" rx="40" ry="20" fill="#ffffff" />
+        <ellipse cx="150" cy="70" rx="30" ry="20" fill="#ffffff" />
+        <ellipse cx="180" cy="80" rx="40" ry="15" fill="#ffffff" />
+
+        <ellipse cx="320" cy="50" rx="30" ry="15" fill="#ffffff" />
+        <ellipse cx="350" cy="40" rx="20" ry="15" fill="#ffffff" />
+        <ellipse cx="370" cy="50" rx="30" ry="10" fill="#ffffff" />
+
+        <!-- Montagnes -->
+        <polygon points="0,180 80,120 160,180" fill="#8bc34a" opacity="0.7" />
+        <polygon points="140,180 210,100 280,180" fill="#66bb6a" opacity="0.8" />
+        <polygon points="260,180 350,90 440,180" fill="#4caf50" opacity="0.7" />
+
+        <!-- Route -->
+        <rect x="200" y="180" width="100" height="120" fill="#90a4ae" />
+
+        <!-- Panneau 404 -->
+        <rect x="230" y="150" width="40" height="60" fill="#f44336" />
+        <rect x="225" y="130" width="50" height="20" fill="#d32f2f" />
+        <rect x="245" y="210" width="10" height="30" fill="#5d4037" />
+        <text x="235" y="180" fill="white" font-family="Arial" font-size="16" font-weight="bold">404</text>
+
+        <!-- Terrain -->
+        <rect x="0" y="180" width="500" height="120" fill="#a5d6a7" opacity="0.5" />
+      </svg>
+    </div>
+  </div>
+</div>

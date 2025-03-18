@@ -1,0 +1,26 @@
+<div *ngIf="shouldShowErrors()" class="form-error">
+      <span *ngIf="control.errors?.['required']">
+        Ce champ est obligatoire.
+      </span>
+  <span *ngIf="control.errors?.['email']">
+        Veuillez entrer une adresse email valide.
+      </span>
+  <span *ngIf="control.errors?.['minlength']">
+        Ce champ doit contenir au moins {{ control.errors?.['minlength'].requiredLength }} caractères.
+      </span>
+  <span *ngIf="control.errors?.['maxlength']">
+        Ce champ ne peut pas dépasser {{ control.errors?.['maxlength'].requiredLength }} caractères.
+      </span>
+  <span *ngIf="control.errors?.['pattern']">
+        La valeur entrée ne correspond pas au format requis.
+      </span>
+  <span *ngIf="control.errors?.['passwordMismatch']">
+        Les mots de passe ne correspondent pas.
+      </span>
+  <span *ngIf="control.errors?.['strongPassword']">
+        Le mot de passe doit contenir au moins 8 caractères, dont une majuscule, une minuscule et un chiffre.
+      </span>
+  <span *ngIf="customError">
+        {{ customError }}
+      </span>
+</div>

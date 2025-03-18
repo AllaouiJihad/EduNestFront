@@ -1,0 +1,20 @@
+<div
+  *ngIf="visible"
+  [@fadeInOut]
+  class="alert"
+  [ngClass]="alertClasses"
+  role="alert">
+  <div class="alert-content">
+    <ng-content></ng-content>
+    <ng-container *ngIf="message">{{ message }}</ng-container>
+  </div>
+  <button
+    *ngIf="dismissible"
+    type="button"
+    class="close-button"
+    (click)="close()">
+    &times;
+  </button>
+</div>
+
+
