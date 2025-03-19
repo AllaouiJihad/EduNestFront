@@ -1,0 +1,90 @@
+<div class="comparison-container">
+  <h1>Comparer les écoles</h1>
+
+  <div *ngIf="loading" class="loading">Chargement...</div>
+
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <div *ngIf="!loading && favoriteSchools.length === 0" class="no-favorites">
+    <p>Vous n'avez pas encore ajouté d'écoles à vos favoris.</p>
+    <a routerLink="/schools" class="search-btn">Rechercher des écoles</a>
+  </div>
+
+  <ng-container *ngIf="!comparisonResult && favoriteSchools.length > 0">
+    <div class="selection-container">
+      <h2>Sélectionnez les écoles à comparer</h2>
+      <p class="selection-info">Sélectionnez 2 à 3 écoles pour les comparer</p>
+
+      <div class="favorite-schools-list">
+        <div *ngFor="let school of favoriteSchools" class="favorite-school-card">
+          <div class="card-content">
+            <h3>{{ school.schoolName }}</h3>
+            <p class="school-location">{{ school.schoolCity }}</p>
+            <p class="school-category">{{ school.categoryName || 'Catégorie non spécifiée' }}</p>
+
+            <div class="school-actions">
+              <label class="compare-checkbox">
+                <input type="checkbox"
+                       [checked]="selectedSchoolIds.includes(school.schoolId)"
+                       (change)="toggleSchoolSelection(school.schoolId)" />
+                Comparer
+              </label>
+
+              <div class="action-buttons">
+                <a [routerLink]="['/schools', school.schoolId]" class="details-btn">Détails</a>
+                <button class="remove-btn" (click)="removeFromFavorites(school.schoolId)">Retirer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="selected-count">
+        {{ selectedSchoolIds.length }} école(s) sélectionnée(s)
+      </div>
+
+      <button
+        class="compare-btn"
+        [disabled]="selectedSchoolIds.length < 2"
+        (click)="compareSchools()"
+      >
+        Comparer les écoles
+      </button>
+    </div>
+  </ng-container>
+
+  <div *ngIf="comparisonResult" class="comparison-result">
+    <div class="comparison-header">
+      <button class="back-btn" (click)="resetComparison()">← Retour à la sélection</button>
+      <h2>Comparaison des écoles</h2>
+    </div>
+
+    <div class="comparison-table-wrapper">
+      <table class="comparison-table">
+        <thead>
+        <tr>
+          <th class="criteria-column">Critères</th>
+          <th *ngFor="let school of comparisonResult.schools">
+            {{ school.name }}
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        <ng-container *ngFor="let criteria of getObjectKeys(comparisonResult.comparisonMatrix)">
+          <tr>
+            <td class="criteria-name">{{ criteria }}</td>
+            <td *ngFor="let value of comparisonResult.comparisonMatrix[criteria]; let i = index"
+                [class.highlight]="isHighlightedValue(criteria, value, i)">
+              <ng-container *ngIf="criteria === 'Note moyenne' && value !== 'Aucune note'; else regularValue">
+                <app-star-rating [rating]="parseRating(value)"></app-star-rating>
+                <span>{{ value }}</span>
+              </ng-container>
+              <ng-template #regularValue>{{ value || 'Non spécifié' }}</ng-template>
+            </td>
+          </tr>
+        </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

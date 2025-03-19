@@ -1,0 +1,98 @@
+<div class="school-details-container">
+  <div *ngIf="loading" class="loading">Chargement...</div>
+
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <div *ngIf="school && !loading" class="school-details">
+    <div class="header">
+      <a routerLink="/schools" class="back-btn">← Retour aux résultats</a>
+      <h1>{{ school.name }}</h1>
+      <div class="category-badge">{{ school.categoryName || 'Catégorie non spécifiée' }}</div>
+    </div>
+
+    <div class="content">
+      <div class="main-info">
+        <div class="image-gallery" *ngIf="school.images && school.images.length > 0">
+          <div class="main-image">
+            <img [src]="school.images[currentImageIndex].url" [alt]="school.images[currentImageIndex].caption || school.name" />
+            <p *ngIf="school.images[currentImageIndex].caption" class="caption">
+              {{ school.images[currentImageIndex].caption }}
+            </p>
+          </div>
+
+          <div class="gallery-controls" *ngIf="school.images.length > 1">
+            <button (click)="prevImage()" class="gallery-btn prev">‹</button>
+            <div class="gallery-indicators">
+              <span *ngFor="let image of school.images; let i = index"
+                    [class.active]="i === currentImageIndex"
+                    (click)="currentImageIndex = i"></span>
+            </div>
+            <button (click)="nextImage()" class="gallery-btn next">›</button>
+          </div>
+        </div>
+
+        <div *ngIf="!school.images || school.images.length === 0" class="no-images">
+          Aucune image disponible
+        </div>
+
+        <div class="school-summary">
+          <div class="rating-section">
+            <app-star-rating [rating]="school.averageRating"></app-star-rating>
+            <span class="rating-value">{{ school.averageRating | number: '1.1-1' }}/5</span>
+            <span class="review-count">({{ school.reviewCount }} avis)</span>
+          </div>
+
+          <div class="buttons">
+            <button class="primary-btn" (click)="addToFavorites()">Ajouter aux favoris</button>
+            <a [routerLink]="['/contact', school.id]" class="secondary-btn">Contacter l'école</a>
+          </div>
+        </div>
+
+        <div class="school-description">
+          <h2>Description</h2>
+          <p>{{ school.description || 'Aucune description disponible.' }}</p>
+        </div>
+      </div>
+
+      <div class="side-info">
+        <div class="info-card contact-info">
+          <h3>Coordonnées</h3>
+          <p><strong>Adresse :</strong> {{ school.address }}, {{ school.postalCode }} {{ school.city }}</p>
+          <p><strong>Téléphone :</strong> {{ school.phoneNumber }}</p>
+          <p><strong>Email :</strong> {{ school.email }}</p>
+          <p *ngIf="school.website">
+            <strong>Site web :</strong>
+            <a [href]="school.website" target="_blank" rel="noopener noreferrer">{{ school.website }}</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="reviews-section" *ngIf="school.reviews && school.reviews.length > 0">
+      <h2>Avis des membres ({{ school.reviewCount }})</h2>
+
+      <div class="reviews-list">
+        <div *ngFor="let review of school.reviews" class="review-card">
+          <div class="review-header">
+            <div class="reviewer-info">
+              <span class="reviewer-name">{{ review.memberName }}</span>
+              <span class="review-date">{{ review.createdAt | date }}</span>
+            </div>
+            <div class="review-rating">
+              <app-star-rating [rating]="review.rating"></app-star-rating>
+              <span class="rating-value">{{ review.rating }}/5</span>
+            </div>
+          </div>
+
+          <div class="review-content">
+            <p>{{ review.content }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="no-reviews" *ngIf="!school.reviews || school.reviews.length === 0">
+      <p>Aucun avis disponible pour cette école.</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,140 @@
+<div class="school-search-container">
+  <h1>Recherche d'écoles</h1>
+
+  <form (ngSubmit)="handleSubmit()" class="search-form">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="name">Nom de l'école</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          [(ngModel)]="searchParams.name"
+          placeholder="Rechercher par nom"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="city">Ville</label>
+        <input
+          type="text"
+          id="city"
+          name="city"
+          [(ngModel)]="searchParams.city"
+          placeholder="Rechercher par ville"
+        />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="postalCode">Code Postal</label>
+        <input
+          type="text"
+          id="postalCode"
+          name="postalCode"
+          [(ngModel)]="searchParams.postalCode"
+          placeholder="Code postal"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="categoryId">Catégorie</label>
+        <select
+          id="categoryId"
+          name="categoryId"
+          [(ngModel)]="searchParams.categoryId"
+        >
+          <option [ngValue]="undefined">Toutes les catégories</option>
+          <option *ngFor="let category of categories" [ngValue]="category.id">
+            {{ category.name }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn" [disabled]="loading">
+      {{ loading ? 'Recherche en cours...' : 'Rechercher' }}
+    </button>
+  </form>
+
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <div *ngIf="!loading && results.content.length === 0 && !error" class="no-results">
+    Aucune école trouvée. Veuillez modifier vos critères de recherche.
+  </div>
+
+  <div *ngIf="results.content.length > 0" class="results-container">
+    <div class="results-header">
+      <div class="sort-controls">
+        <span>Trier par :</span>
+        <button
+          (click)="handleSort('name')"
+          [class.active]="searchParams.sortBy === 'name'"
+        >
+          Nom {{ searchParams.sortBy === 'name' ? (searchParams.sortDirection === 'asc' ? '↑' : '↓') : '' }}
+        </button>
+        <button
+          (click)="handleSort('city')"
+          [class.active]="searchParams.sortBy === 'city'"
+        >
+          Ville {{ searchParams.sortBy === 'city' ? (searchParams.sortDirection === 'asc' ? '↑' : '↓') : '' }}
+        </button>
+        <button
+          (click)="handleSort('averageRating')"
+          [class.active]="searchParams.sortBy === 'averageRating'"
+        >
+          Note {{ searchParams.sortBy === 'averageRating' ? (searchParams.sortDirection === 'asc' ? '↑' : '↓') : '' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="schools-grid">
+      <div *ngFor="let school of results.content" class="school-card">
+        <div class="school-image">
+          <img *ngIf="school.imageUrl" [src]="school.imageUrl" [alt]="school.name" />
+          <div *ngIf="!school.imageUrl" class="no-image">Pas d'image</div>
+        </div>
+
+        <div class="school-info">
+          <h3>{{ school.name }}</h3>
+          <p class="category">{{ school.categoryName || 'Catégorie non spécifiée' }}</p>
+          <p class="location">{{ school.city }} {{ school.postalCode ? '(' + school.postalCode + ')' : '' }}</p>
+
+          <div class="rating">
+            <app-star-rating [rating]="school.averageRating"></app-star-rating>
+            <span class="rating-text">
+              {{ school.averageRating ? (school.averageRating | number: '1.1-1') : 'N/A' }}
+              ({{ school.reviewCount || 0 }} avis)
+            </span>
+          </div>
+        </div>
+
+        <div class="school-actions">
+          <a [routerLink]="['/schools', school.id]" class="details-btn">Voir détails</a>
+          <button class="favorite-btn" (click)="addToFavorites(school.id)">Ajouter aux favoris</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pagination" *ngIf="results.totalPages > 1">
+      <button
+        [disabled]="results.first"
+        (click)="handlePageChange(results.number - 1)"
+      >
+        Précédent
+      </button>
+
+      <span class="page-info">
+        Page {{ results.number + 1 }} sur {{ results.totalPages }}
+      </span>
+
+      <button
+        [disabled]="results.last"
+        (click)="handlePageChange(results.number + 1)"
+      >
+        Suivant
+      </button>
+    </div>
+  </div>
+</div>

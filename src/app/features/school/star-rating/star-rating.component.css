@@ -1,0 +1,22 @@
+.stars {
+  display: inline-flex;
+}
+.star {
+  font-size: 1.2rem;
+  color: #ddd;
+  margin-right: 2px;
+}
+.star.filled {
+  color: #ffb400;
+}
+.star.half-filled {
+  position: relative;
+  color: #ddd;
+}
+.star.half-filled::before {
+  content: '★';
+  position: absolute;
+  color: #ffb400;
+  width: 50%;
+  overflow: hidden;
+}

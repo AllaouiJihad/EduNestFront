@@ -1,0 +1,621 @@
+/* Variables */
+:root {
+  --primary-color: #4a90e2;
+  --secondary-color: #3a7bc8;
+  --background-color: #f8f9fa;
+  --text-color: #333;
+  --text-light: #666;
+  --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  --card-hover-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  --border-radius: 10px;
+  --transition: all 0.3s ease;
+}
+
+.home-container {
+  font-family: 'Roboto', sans-serif;
+  color: var(--text-color);
+}
+
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/assets/images/hero-school.jpg');
+  background-size: cover;
+  background-position: center;
+  color: white;
+  padding: 80px 20px;
+  text-align: center;
+  position: relative;
+
+  .hero-content {
+    max-width: 900px;
+    margin: 0 auto;
+
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+
+      @media (min-width: 768px) {
+        font-size: 3rem;
+      }
+    }
+
+    .hero-subtitle {
+      font-size: 1.125rem;
+      margin-bottom: 40px;
+      opacity: 0.9;
+
+      @media (min-width: 768px) {
+        font-size: 1.25rem;
+      }
+    }
+  }
+
+  .search-box {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: var(--border-radius);
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      align-items: flex-end;
+    }
+
+    .search-field {
+      flex: 1;
+
+      label {
+        display: block;
+        font-size: 0.875rem;
+        color: #333;
+        margin-bottom: 8px;
+        text-align: left;
+        font-weight: 500;
+      }
+
+      input, select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: var(--transition);
+
+        &:focus {
+          outline: none;
+          border-color: var(--primary-color);
+          box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+      }
+    }
+
+    .search-btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 14px 20px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+
+      @media (min-width: 768px) {
+        min-width: 150px;
+      }
+
+      &:hover {
+        background-color: var(--secondary-color);
+        transform: translateY(-2px);
+      }
+
+      .search-icon {
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
+/* Stats Section */
+.stats-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  padding: 40px 20px;
+  background-color: var(--background-color);
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+    padding: 60px 40px;
+  }
+
+  .stat-card {
+    text-align: center;
+    padding: 20px 15px;
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--card-hover-shadow);
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+
+      @media (min-width: 768px) {
+        font-size: 2.5rem;
+      }
+    }
+
+    .stat-label {
+      font-size: 1rem;
+      color: var(--text-light);
+      font-weight: 500;
+
+      @media (min-width: 768px) {
+        font-size: 1.125rem;
+      }
+    }
+  }
+}
+
+/* How it Works Section */
+.how-it-works-section {
+  padding: 60px 20px;
+  text-align: center;
+  background-color: white;
+
+  h2 {
+    font-size: 2rem;
+    color: var(--text-color);
+    margin-bottom: 40px;
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+
+    &:after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background-color: var(--primary-color);
+      border-radius: 3px;
+    }
+  }
+
+  .steps-container {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    @media (min-width: 576px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 992px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .step-card {
+      padding: 30px 20px;
+      border-radius: var(--border-radius);
+      background-color: white;
+      box-shadow: var(--card-shadow);
+      transition: var(--transition);
+
+      &:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--card-hover-shadow);
+      }
+
+      .step-icon {
+        font-size: 2.25rem;
+        margin-bottom: 15px;
+      }
+
+      h3 {
+        font-size: 1.25rem;
+        color: var(--text-color);
+        margin-bottom: 15px;
+        font-weight: 600;
+      }
+
+      p {
+        color: var(--text-light);
+        font-size: 1rem;
+        line-height: 1.5;
+      }
+    }
+  }
+}
+
+/* Featured Schools Section */
+.featured-schools-section {
+  padding: 60px 20px;
+  background-color: var(--background-color);
+
+  h2 {
+    font-size: 2rem;
+    color: var(--text-color);
+    text-align: center;
+    margin-bottom: 40px;
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+    left: 50%;
+    transform: translateX(-50%);
+
+    &:after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background-color: var(--primary-color);
+      border-radius: 3px;
+    }
+  }
+
+  .loading-indicator {
+    text-align: center;
+    padding: 40px;
+    font-size: 1.125rem;
+    color: var(--text-light);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(74, 144, 226, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--primary-color);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  }
+
+  .error-message {
+    text-align: center;
+    color: #e53935;
+    background-color: #ffebee;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin: 0 auto 20px;
+    max-width: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    .error-icon {
+      font-size: 1.25rem;
+    }
+  }
+
+  .featured-schools-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    @media (min-width: 576px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 992px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .school-card {
+      background-color: white;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      transition: var(--transition);
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--card-hover-shadow);
+      }
+
+      .school-image {
+        height: 180px;
+        overflow: hidden;
+        position: relative;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.5s ease;
+        }
+
+        .no-image {
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: #f5f5f5;
+          color: #999;
+
+          .school-icon {
+            font-size: 3rem;
+          }
+        }
+      }
+
+      &:hover .school-image img {
+        transform: scale(1.05);
+      }
+
+      .school-info {
+        padding: 20px;
+
+        h3 {
+          font-size: 1.125rem;
+          color: var(--text-color);
+          margin-bottom: 8px;
+          font-weight: 600;
+        }
+
+        .school-location {
+          color: var(--text-light);
+          margin-bottom: 12px;
+          font-size: 0.875rem;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
+
+        .school-category {
+          display: inline-block;
+          background-color: #e6f2ff;
+          color: var(--primary-color);
+          padding: 5px 12px;
+          border-radius: 20px;
+          font-size: 0.875rem;
+          margin-bottom: 12px;
+          font-weight: 500;
+        }
+
+        .school-rating {
+          display: flex;
+          align-items: center;
+          margin-bottom: 15px;
+
+          .rating-text {
+            margin-left: 10px;
+            color: var(--text-light);
+            font-size: 0.875rem;
+          }
+        }
+
+        .view-school-btn {
+          display: block;
+          background-color: var(--primary-color);
+          color: white;
+          text-align: center;
+          padding: 10px;
+          border-radius: 6px;
+          text-decoration: none;
+          font-weight: 500;
+          transition: var(--transition);
+
+          &:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+          }
+        }
+      }
+    }
+  }
+
+  .view-all-container {
+    text-align: center;
+    margin-top: 40px;
+
+    .view-all-btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: white;
+      color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+
+      &:hover {
+        background-color: #e6f2ff;
+        transform: translateY(-2px);
+      }
+    }
+  }
+}
+
+/* Testimonials Section */
+.testimonials-section {
+  padding: 60px 20px;
+  background-color: white;
+
+  h2 {
+    font-size: 2rem;
+    color: var(--text-color);
+    text-align: center;
+    margin-bottom: 40px;
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+    left: 50%;
+    transform: translateX(-50%);
+
+    &:after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background-color: var(--primary-color);
+      border-radius: 3px;
+    }
+  }
+
+  .testimonials-container {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .testimonial-card {
+      background-color: white;
+      border-radius: var(--border-radius);
+      padding: 30px;
+      box-shadow: var(--card-shadow);
+      transition: var(--transition);
+      position: relative;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--card-hover-shadow);
+      }
+
+      &:before {
+        content: '"';
+        position: absolute;
+        top: 10px;
+        left: 20px;
+        font-size: 5rem;
+        color: rgba(74, 144, 226, 0.1);
+        font-family: Georgia, serif;
+        line-height: 1;
+      }
+
+      .testimonial-content {
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+
+        p {
+          color: var(--text-color);
+          font-size: 1rem;
+          line-height: 1.6;
+          font-style: italic;
+        }
+      }
+
+      .testimonial-author {
+        display: flex;
+        align-items: center;
+
+        .author-avatar {
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          background-color: var(--primary-color);
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.25rem;
+          font-weight: 600;
+          margin-right: 15px;
+        }
+
+        .author-info {
+          .author-name {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 5px;
+          }
+
+          .author-role {
+            color: var(--text-light);
+            font-size: 0.875rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* CTA Section */
+.cta-section {
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/assets/images/school-building.jpg');
+  background-size: cover;
+  background-position: center;
+  color: white;
+  padding: 80px 20px;
+  text-align: center;
+
+  .cta-content {
+    max-width: 800px;
+    margin: 0 auto;
+
+    h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 1.125rem;
+      margin-bottom: 30px;
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+
+    .cta-btn {
+      display: inline-block;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 15px 30px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.125rem;
+      transition: var(--transition);
+
+      &:hover {
+        background-color: var(--secondary-color);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+}

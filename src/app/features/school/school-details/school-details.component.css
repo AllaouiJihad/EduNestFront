@@ -1,0 +1,345 @@
+.school-details-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.loading {
+  text-align: center;
+  padding: 50px;
+  font-size: 18px;
+  color: #666;
+}
+
+.error-message {
+  color: #e53935;
+  background-color: #ffebee;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 30px 0;
+  text-align: center;
+}
+
+.school-details {
+  .header {
+    margin-bottom: 30px;
+
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #4a90e2;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 28px;
+      color: #333;
+    }
+
+    .category-badge {
+      display: inline-block;
+      background-color: #e6f2ff;
+      color: #4a90e2;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+  }
+
+  .content {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 30px;
+
+    @media (max-width: 992px) {
+      grid-template-columns: 1fr;
+    }
+
+    .main-info {
+      .image-gallery {
+        margin-bottom: 30px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+        .main-image {
+          position: relative;
+
+          img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+          }
+
+          .caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            margin: 0;
+          }
+        }
+
+        .gallery-controls {
+          display: flex;
+          align-items: center;
+          padding: 15px;
+          background-color: #f8f9fa;
+
+          .gallery-btn {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+
+            &:hover {
+              background-color: #e6f2ff;
+              border-color: #4a90e2;
+              color: #4a90e2;
+            }
+          }
+
+          .gallery-indicators {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+
+            span {
+              width: 10px;
+              height: 10px;
+              border-radius: 50%;
+              background-color: #ddd;
+              cursor: pointer;
+
+              &.active {
+                background-color: #4a90e2;
+              }
+
+              &:hover:not(.active) {
+                background-color: #bbb;
+              }
+            }
+          }
+        }
+      }
+
+      .no-images {
+        height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f5f5f5;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        color: #999;
+      }
+
+      .school-summary {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+
+        .rating-section {
+          display: flex;
+          align-items: center;
+          margin-bottom: 20px;
+
+          .rating-value {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 10px;
+          }
+
+          .review-count {
+            color: #666;
+            font-size: 14px;
+          }
+        }
+
+        .buttons {
+          display: flex;
+          gap: 15px;
+
+          @media (max-width: 576px) {
+            flex-direction: column;
+          }
+
+          .primary-btn, .secondary-btn {
+            flex: 1;
+            padding: 12px 0;
+            text-align: center;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+          }
+
+          .primary-btn {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+
+            &:hover {
+              background-color: #3a7bc8;
+            }
+          }
+
+          .secondary-btn {
+            background-color: white;
+            color: #4a90e2;
+            border: 1px solid #4a90e2;
+
+            &:hover {
+              background-color: #e6f2ff;
+            }
+          }
+        }
+      }
+
+      .school-description {
+        margin-bottom: 30px;
+
+        h2 {
+          color: #333;
+          margin-bottom: 15px;
+          font-size: 22px;
+        }
+
+        p {
+          line-height: 1.6;
+          color: #666;
+        }
+      }
+    }
+
+    .side-info {
+      .info-card {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+
+        h3 {
+          color: #333;
+          margin-top: 0;
+          margin-bottom: 15px;
+          font-size: 18px;
+          border-bottom: 1px solid #ddd;
+          padding-bottom: 10px;
+        }
+
+        p {
+          margin: 10px 0;
+          color: #666;
+
+          strong {
+            color: #333;
+          }
+
+          a {
+            color: #4a90e2;
+            word-break: break-all;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .reviews-section {
+    margin-top: 50px;
+
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 22px;
+    }
+
+    .reviews-list {
+      display: grid;
+      gap: 20px;
+
+      .review-card {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+
+        .review-header {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 15px;
+
+          @media (max-width: 576px) {
+            flex-direction: column;
+            gap: 10px;
+          }
+
+          .reviewer-info {
+            .reviewer-name {
+              font-weight: 600;
+              color: #333;
+            }
+
+            .review-date {
+              color: #999;
+              font-size: 14px;
+              margin-left: 10px;
+
+              @media (max-width: 576px) {
+                margin-left: 0;
+                display: block;
+              }
+            }
+          }
+
+          .review-rating {
+            display: flex;
+            align-items: center;
+
+            .rating-value {
+              margin-left: 10px;
+              font-weight: 600;
+              color: #333;
+            }
+          }
+        }
+
+        .review-content {
+          p {
+            margin: 0;
+            line-height: 1.6;
+            color: #666;
+          }
+        }
+      }
+    }
+  }
+
+  .no-reviews {
+    text-align: center;
+    padding: 30px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    margin-top: 30px;
+    color: #666;
+  }
+}
