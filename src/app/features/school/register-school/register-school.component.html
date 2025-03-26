@@ -1,0 +1,389 @@
+<!-- src/app/features/schools/register-school/register-school.component.html -->
+<app-navbar></app-navbar>
+
+<div class="register-school-page">
+  <div class="container">
+    <div class="page-header">
+      <h1>Enregistrer une école</h1>
+      <p class="subtitle">Ajoutez votre établissement à notre plateforme pour augmenter sa visibilité</p>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+      <app-loading-spinner></app-loading-spinner>
+      <p>Chargement...</p>
+    </div>
+
+    <app-error-alert *ngIf="error" [message]="error"></app-error-alert>
+
+    <div *ngIf="!loading && !error" class="registration-form-container">
+      <!-- Progression -->
+      <div class="progress-container">
+        <div class="progress-steps">
+          <div
+            *ngFor="let step of [1, 2, 3, 4]; let i = index"
+            class="progress-step"
+            [class.active]="currentStep === step"
+            [class.completed]="currentStep > step"
+          >
+            <div class="step-number">{{ step }}</div>
+            <div class="step-label">
+              <ng-container [ngSwitch]="step">
+                <ng-container *ngSwitchCase="1">Informations de base</ng-container>
+                <ng-container *ngSwitchCase="2">Coordonnées</ng-container>
+                <ng-container *ngSwitchCase="3">Détails additionnels</ng-container>
+                <ng-container *ngSwitchCase="4">Conditions d'utilisation</ng-container>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width]="(currentStep / totalSteps * 100) + '%'"></div>
+        </div>
+      </div>
+
+      <!-- Formulaire étape 1: Informations de base -->
+      <div *ngIf="currentStep === 1" class="form-step">
+        <h2>Informations de base</h2>
+        <p class="step-description">Entrez les informations générales de votre établissement</p>
+
+        <form [formGroup]="registrationForm.basicInfo" class="form">
+          <div class="form-group">
+            <label for="name">Nom de l'établissement <span class="required">*</span></label>
+            <input
+              type="text"
+              id="name"
+              formControlName="name"
+              placeholder="Ex: Lycée International de Paris"
+            >
+            <div *ngIf="hasError(registrationForm.basicInfo, 'name', 'required')" class="error-message">
+              Le nom de l'établissement est requis
+            </div>
+            <div *ngIf="hasError(registrationForm.basicInfo, 'name', 'minlength')" class="error-message">
+              Le nom doit contenir au moins 3 caractères
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="categoryId">Type d'établissement <span class="required">*</span></label>
+            <select id="categoryId" formControlName="categoryId">
+              <option value="">Sélectionnez une catégorie</option>
+              <option *ngFor="let category of categories" [value]="category.id">
+                {{ category.name }}
+              </option>
+            </select>
+            <div *ngIf="hasError(registrationForm.basicInfo, 'categoryId', 'required')" class="error-message">
+              Veuillez sélectionner une catégorie
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Description <span class="required">*</span></label>
+            <textarea
+              id="description"
+              formControlName="description"
+              rows="5"
+              placeholder="Décrivez votre établissement, sa mission, ses valeurs..."
+            ></textarea>
+            <div *ngIf="hasError(registrationForm.basicInfo, 'description', 'required')" class="error-message">
+              Une description est requise
+            </div>
+            <div *ngIf="hasError(registrationForm.basicInfo, 'description', 'minlength')" class="error-message">
+              La description doit contenir au moins 50 caractères
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="foundedYear">Année de fondation</label>
+            <input
+              type="text"
+              id="foundedYear"
+              formControlName="foundedYear"
+              placeholder="Ex: 1995"
+            >
+            <div *ngIf="hasError(registrationForm.basicInfo, 'foundedYear', 'pattern')" class="error-message">
+              Veuillez entrer une année valide (4 chiffres)
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Formulaire étape 2: Coordonnées -->
+      <div *ngIf="currentStep === 2" class="form-step">
+        <h2>Coordonnées</h2>
+        <p class="step-description">Fournissez les informations de contact de votre établissement</p>
+
+        <form [formGroup]="registrationForm.contactInfo" class="form">
+          <div class="form-group">
+            <label for="address">Adresse <span class="required">*</span></label>
+            <input
+              type="text"
+              id="address"
+              formControlName="address"
+              placeholder="Ex: 123 rue du Lycée"
+            >
+            <div *ngIf="hasError(registrationForm.contactInfo, 'address', 'required')" class="error-message">
+              L'adresse est requise
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="city">Ville <span class="required">*</span></label>
+              <input
+                type="text"
+                id="city"
+                formControlName="city"
+                placeholder="Ex: Paris"
+              >
+              <div *ngIf="hasError(registrationForm.contactInfo, 'city', 'required')" class="error-message">
+                La ville est requise
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="postalCode">Code postal <span class="required">*</span></label>
+              <input
+                type="text"
+                id="postalCode"
+                formControlName="postalCode"
+                placeholder="Ex: 75001"
+              >
+              <div *ngIf="hasError(registrationForm.contactInfo, 'postalCode', 'required')" class="error-message">
+                Le code postal est requis
+              </div>
+              <div *ngIf="hasError(registrationForm.contactInfo, 'postalCode', 'pattern')" class="error-message">
+                Le code postal doit contenir 5 chiffres
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="phoneNumber">Numéro de téléphone <span class="required">*</span></label>
+            <input
+              type="tel"
+              id="phoneNumber"
+              formControlName="phoneNumber"
+              placeholder="Ex: 0123456789"
+            >
+            <div *ngIf="hasError(registrationForm.contactInfo, 'phoneNumber', 'required')" class="error-message">
+              Le numéro de téléphone est requis
+            </div>
+            <div *ngIf="hasError(registrationForm.contactInfo, 'phoneNumber', 'pattern')" class="error-message">
+              Veuillez entrer un numéro de téléphone valide
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email <span class="required">*</span></label>
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              placeholder="Ex: contact@ecole.fr"
+            >
+            <div *ngIf="hasError(registrationForm.contactInfo, 'email', 'required')" class="error-message">
+              L'email est requis
+            </div>
+            <div *ngIf="hasError(registrationForm.contactInfo, 'email', 'email')" class="error-message">
+              Veuillez entrer une adresse email valide
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="websiteUrl">Site web</label>
+            <input
+              type="url"
+              id="websiteUrl"
+              formControlName="websiteUrl"
+              placeholder="Ex: https://www.ecole.fr"
+            >
+            <div *ngIf="hasError(registrationForm.contactInfo, 'websiteUrl', 'pattern')" class="error-message">
+              Veuillez entrer une URL valide
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Formulaire étape 3: Détails additionnels -->
+      <div *ngIf="currentStep === 3" class="form-step">
+        <h2>Détails additionnels</h2>
+        <p class="step-description">Ajoutez des informations complémentaires sur votre établissement</p>
+
+        <form [formGroup]="registrationForm.detailedInfo" class="form">
+          <div class="form-group">
+            <label>Équipements et services</label>
+            <div class="dynamic-fields">
+              <div *ngFor="let control of facilitiesAndAmenities.controls; let i = index" class="dynamic-field">
+                <input
+                  type="text"
+                  [formControlName]="i"
+                  placeholder="Ex: Bibliothèque, Cantine, Terrain de sport..."
+                >
+                <button
+                  type="button"
+                  class="remove-btn"
+                  *ngIf="i > 0"
+                  (click)="removeFacility(i)"
+                  [attr.aria-label]="'Supprimer'"
+                >
+                  ×
+                </button>
+              </div>
+              <button type="button" class="add-btn" (click)="addFacility()">
+                + Ajouter un équipement
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Programmes proposés</label>
+            <div formArrayName="programs" class="dynamic-fields programs-fields">
+              <div *ngFor="let program of programs.controls; let i = index" [formGroupName]="i" class="program-field">
+                <div class="program-header">
+                  <h4>Programme {{ i + 1 }}</h4>
+                  <button
+                    type="button"
+                    class="remove-btn"
+                    *ngIf="i > 0"
+                    (click)="removeProgram(i)"
+                    aria-label="Supprimer"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div class="form-group">
+                  <label [for]="'programName' + i">Nom du programme <span class="required">*</span></label>
+                  <input
+                    type="text"
+                    [id]="'programName' + i"
+                    formControlName="name"
+                    placeholder="Ex: Baccalauréat Scientifique"
+                  >
+                  <div *ngIf="isProgramInvalid(i)" class="error-message">
+                    Le nom du programme est requis
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label [for]="'programDescription' + i">Description</label>
+                  <textarea
+                    [id]="'programDescription' + i"
+                    formControlName="description"
+                    rows="3"
+                    placeholder="Description du programme..."
+                  ></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label [for]="'programDuration' + i">Durée</label>
+                  <input
+                    type="text"
+                    [id]="'programDuration' + i"
+                    formControlName="duration"
+                    placeholder="Ex: 3 ans"
+                  >
+                </div>
+              </div>
+
+              <button type="button" class="add-btn" (click)="addProgram()">
+                + Ajouter un programme
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="additionalInfo">Informations complémentaires</label>
+            <textarea
+              id="additionalInfo"
+              formControlName="additionalInfo"
+              rows="5"
+              placeholder="Toute autre information pertinente..."
+            ></textarea>
+          </div>
+        </form>
+      </div>
+
+      <!-- Formulaire étape 4: Conditions d'utilisation -->
+      <div *ngIf="currentStep === 4" class="form-step">
+        <h2>Conditions d'utilisation</h2>
+        <p class="step-description">Veuillez accepter les conditions d'utilisation pour finaliser votre inscription</p>
+
+        <form [formGroup]="registrationForm.termsAgreement" class="form">
+          <div class="terms-content">
+            <h3>Conditions Générales d'Utilisation</h3>
+            <p>Bienvenue sur la plateforme EduNest. En utilisant notre service, vous acceptez de vous conformer aux présentes conditions d'utilisation et de les respecter. Veuillez les lire attentivement.</p>
+
+            <h4>1. ACCEPTATION DES CONDITIONS</h4>
+            <p>En accédant au site, vous acceptez d'être lié par ces conditions, toutes les lois et règlements applicables, et vous acceptez que vous êtes responsable du respect des lois locales applicables.</p>
+
+            <h4>2. ENREGISTREMENT ET PROFIL</h4>
+            <p>Les informations fournies lors de l'enregistrement doivent être exactes, complètes et à jour. Vous êtes responsable de maintenir la confidentialité de votre compte et mot de passe.</p>
+
+            <h4>3. CONTENU</h4>
+            <p>Les informations relatives à votre établissement doivent être exactes et ne pas induire en erreur. Vous êtes entièrement responsable du contenu que vous publiez.</p>
+
+            <h4>4. MODÉRATION</h4>
+            <p>Nous nous réservons le droit de modérer, éditer ou supprimer tout contenu qui viole nos conditions ou que nous jugeons inapproprié.</p>
+
+            <h4>5. PROPRIÉTÉ INTELLECTUELLE</h4>
+            <p>Vous conservez tous les droits sur le contenu que vous soumettez, mais vous nous accordez une licence pour l'utiliser sur notre plateforme.</p>
+
+            <h4>6. LIMITATION DE RESPONSABILITÉ</h4>
+            <p>Nous ne serons pas responsables des dommages indirects, consécutifs, ou exemplaires découlant de l'utilisation de notre service.</p>
+          </div>
+
+          <div class="form-group checkbox-group">
+            <div class="checkbox-item">
+              <input
+                type="checkbox"
+                id="acceptTerms"
+                formControlName="acceptTerms"
+              >
+              <label for="acceptTerms">J'accepte les conditions générales d'utilisation <span class="required">*</span></label>
+            </div>
+            <div *ngIf="hasError(registrationForm.termsAgreement, 'acceptTerms', 'requiredTrue')" class="error-message">
+              Vous devez accepter les conditions d'utilisation
+            </div>
+          </div>
+
+          <div class="form-group checkbox-group">
+            <div class="checkbox-item">
+              <input
+                type="checkbox"
+                id="acceptPrivacyPolicy"
+                formControlName="acceptPrivacyPolicy"
+              >
+              <label for="acceptPrivacyPolicy">J'accepte la politique de confidentialité <span class="required">*</span></label>
+            </div>
+            <div *ngIf="hasError(registrationForm.termsAgreement, 'acceptPrivacyPolicy', 'requiredTrue')" class="error-message">
+              Vous devez accepter la politique de confidentialité
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button
+          type="button"
+          class="back-btn"
+          *ngIf="currentStep > 1"
+          (click)="previousStep()"
+        >
+          Précédent
+        </button>
+
+        <button
+          type="button"
+          class="next-btn"
+          (click)="nextStep()"
+        >
+          {{ currentStep < totalSteps ? 'Suivant' : 'Soumettre la demande' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

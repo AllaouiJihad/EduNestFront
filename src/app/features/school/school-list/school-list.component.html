@@ -1,0 +1,208 @@
+<!-- src/app/features/schools/school-list/school-list.component.html -->
+<app-navbar></app-navbar>
+
+<div class="school-list-page">
+  <div class="container">
+    <div class="page-header">
+      <h1>Liste des écoles</h1>
+      <p class="subtitle">Découvrez et comparez les écoles disponibles</p>
+    </div>
+
+    <!-- Filtres de recherche -->
+    <div class="filters-section">
+      <h2>Filtres</h2>
+
+      <form [formGroup]="searchForm" (ngSubmit)="searchSchools()" class="filters-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Nom de l'école</label>
+            <input
+              type="text"
+              id="name"
+              formControlName="name"
+              placeholder="Ex: Lycée Victor Hugo"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="city">Ville</label>
+            <input
+              type="text"
+              id="city"
+              formControlName="city"
+              placeholder="Ex: Paris"
+            >
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="postalCode">Code postal</label>
+            <input
+              type="text"
+              id="postalCode"
+              formControlName="postalCode"
+              placeholder="Ex: 75001"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="categoryId">Catégorie</label>
+            <select id="categoryId" formControlName="categoryId">
+              <option value="">Toutes les catégories</option>
+              <option *ngFor="let category of categories" [value]="category.id">
+                {{ category.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="search-btn">
+            <span class="search-icon">🔍</span> Rechercher
+          </button>
+          <button type="button" class="reset-btn" (click)="resetFilters()" [disabled]="!hasActiveFilters()">
+            Réinitialiser
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Résultats -->
+    <div class="results-section">
+      <div class="results-header">
+        <div class="results-count">
+          <span *ngIf="totalElements > 0">{{ totalElements }} école{{ totalElements > 1 ? 's' : '' }} trouvée{{ totalElements > 1 ? 's' : '' }}</span>
+          <span *ngIf="totalElements === 0 && !loading">Aucune école trouvée</span>
+        </div>
+
+        <div class="sorting-options">
+          <label for="sorting">Trier par:</label>
+          <select
+            id="sorting"
+            [ngModel]="currentSort"
+            (ngModelChange)="setSorting($event)"
+            [ngModelOptions]="{standalone: true}"
+          >
+            <option *ngFor="let option of sortOptions" [value]="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div *ngIf="loading" class="loading-container">
+        <app-loading-spinner></app-loading-spinner>
+        <p>Recherche en cours...</p>
+      </div>
+
+      <app-error-alert *ngIf="error" [message]="error"></app-error-alert>
+
+      <!-- Liste des écoles -->
+      <div *ngIf="!loading && schools.length > 0" class="schools-grid">
+        <div *ngFor="let school of schools" class="school-card" [routerLink]="['/schools', school.id]">
+          <div class="school-image">
+            <img *ngIf="school.imageUrl" [src]="school.imageUrl" [alt]="school.name" />
+            <div *ngIf="!school.imageUrl" class="no-image">
+              <span class="school-icon">🏫</span>
+            </div>
+            <button
+              class="favorite-btn"
+              (click)="addToFavorites(school, $event)"
+              [attr.aria-label]="'Ajouter ' + school.name + ' aux favoris'"
+            >
+              ❤️
+            </button>
+          </div>
+
+          <div class="school-info">
+            <h3 class="school-name">{{ school.name }}</h3>
+            <p class="school-location">
+              <span class="location-icon">📍</span> {{ formatLocation(school) }}
+            </p>
+
+            <div class="school-category" *ngIf="school.categoryName">
+              {{ school.categoryName }}
+            </div>
+
+            <div class="school-rating">
+              <app-star-rating [rating]="school.averageRating"></app-star-rating>
+              <span class="rating-text">
+                {{ school.averageRating ? (school.averageRating | number: '1.1-1') : 'N/A' }}
+                ({{ school.reviewCount || 0 }} avis)
+              </span>
+            </div>
+
+            <div class="school-contact" *ngIf="school.phoneNumber">
+              <span class="contact-icon">📞</span> {{ school.phoneNumber }}
+            </div>
+
+            <a [routerLink]="['/schools', school.id]" class="view-school-btn">
+              Voir l'école
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Message si aucun résultat -->
+      <div *ngIf="!loading && schools.length === 0 && !error" class="no-results">
+        <div class="no-results-icon">🔍</div>
+        <h3>Aucune école trouvée</h3>
+        <p>Essayez de modifier vos critères de recherche</p>
+        <button class="reset-search-btn" (click)="resetFilters()">Réinitialiser la recherche</button>
+      </div>
+
+      <!-- Pagination -->
+      <div *ngIf="totalPages > 1" class="pagination">
+        <button
+          class="pagination-btn"
+          [disabled]="currentPage === 0"
+          (click)="setPage(currentPage - 1)"
+          aria-label="Page précédente"
+        >
+          &laquo;
+        </button>
+
+        <button
+          *ngFor="let page of getPageNumbers()"
+          class="pagination-btn"
+          [class.active]="page === currentPage"
+          (click)="setPage(page)"
+        >
+          {{ page + 1 }}
+        </button>
+
+        <button
+          class="pagination-btn"
+          [disabled]="currentPage === totalPages - 1"
+          (click)="setPage(currentPage + 1)"
+          aria-label="Page suivante"
+        >
+          &raquo;
+        </button>
+      </div>
+    </div>
+
+    <!-- Section pour comparer les écoles -->
+    <div class="comparison-section">
+      <h2>Comparer des écoles</h2>
+      <p>Vous souhaitez comparer différentes écoles pour faire le meilleur choix ?</p>
+      <a [routerLink]="['/compare']" class="compare-btn">
+        Accéder à l'outil de comparaison
+      </a>
+    </div>
+
+    <!-- Section inscription école -->
+    <div class="register-school-section">
+      <div class="register-school-content">
+        <h2>Vous êtes une école ?</h2>
+        <p>Inscrivez votre établissement sur EduNest pour augmenter votre visibilité</p>
+        <a [routerLink]="['/register-school']" class="register-btn">
+          Inscrire mon école
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

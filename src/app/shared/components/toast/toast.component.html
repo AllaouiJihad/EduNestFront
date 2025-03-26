@@ -1,0 +1,28 @@
+<div class="toast-container" *ngIf="toasts.length > 0">
+  <div
+    *ngFor="let toast of toasts"
+    class="toast fade-in"
+    [ngClass]="toast.type"
+    role="alert"
+    aria-live="assertive"
+  >
+    <div class="toast-icon">
+      <span *ngIf="toast.type === 'success'">✅</span>
+      <span *ngIf="toast.type === 'error'">❌</span>
+      <span *ngIf="toast.type === 'info'">ℹ️</span>
+      <span *ngIf="toast.type === 'warning'">⚠️</span>
+    </div>
+    <div class="toast-content">
+      <div class="toast-title">{{ toast.title }}</div>
+      <div class="toast-message">{{ toast.message }}</div>
+    </div>
+    <button
+      type="button"
+      class="toast-close"
+      (click)="closeToast(toast.id)"
+      aria-label="Fermer"
+    >
+      ×
+    </button>
+  </div>
+</div>

@@ -1,0 +1,71 @@
+<!-- src/app/shared/components/footer/footer.component.html -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <div class="logo">
+          <span class="logo-icon">🏫</span>
+          <span class="logo-text">EduNest</span>
+        </div>
+        <p class="tagline">Trouvez l'école idéale pour votre avenir</p>
+        <div class="social-links">
+          <a href="#" class="social-link" aria-label="Facebook">
+            <span class="social-icon">📱</span>
+          </a>
+          <a href="#" class="social-link" aria-label="Twitter">
+            <span class="social-icon">📱</span>
+          </a>
+          <a href="#" class="social-link" aria-label="Instagram">
+            <span class="social-icon">📱</span>
+          </a>
+          <a href="#" class="social-link" aria-label="LinkedIn">
+            <span class="social-icon">📱</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-links">
+        <div class="links-group">
+          <h3 class="group-title">Pour les utilisateurs</h3>
+          <ul class="links-list">
+            <li><a [routerLink]="['/schools']">Rechercher des écoles</a></li>
+            <li><a [routerLink]="['/compare']">Comparer des écoles</a></li>
+            <li><a [routerLink]="['/favorites']">Écoles favorites</a></li>
+            <li><a [routerLink]="['/reviews']">Avis et évaluations</a></li>
+          </ul>
+        </div>
+
+        <div class="links-group">
+          <h3 class="group-title">Pour les écoles</h3>
+          <ul class="links-list">
+            <li><a [routerLink]="['/register-school']">Inscrire mon école</a></li>
+            <li><a [routerLink]="['/pricing']">Forfaits et tarifs</a></li>
+            <li><a [routerLink]="['/benefits']">Avantages</a></li>
+            <li><a [routerLink]="['/success-stories']">Témoignages</a></li>
+          </ul>
+        </div>
+
+        <div class="links-group">
+          <h3 class="group-title">À propos</h3>
+          <ul class="links-list">
+            <li><a [routerLink]="['/about']">Qui sommes-nous</a></li>
+            <li><a [routerLink]="['/how-it-works']">Comment ça marche</a></li>
+            <li><a [routerLink]="['/contact']">Contact</a></li>
+            <li><a [routerLink]="['/careers']">Carrières</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="legal-links">
+        <a [routerLink]="['/terms']">Conditions d'utilisation</a>
+        <a [routerLink]="['/privacy']">Politique de confidentialité</a>
+        <a [routerLink]="['/cookies']">Politique de cookies</a>
+      </div>
+      <div class="copyright">
+        &copy; {{ currentYear }} EduNest. Tous droits réservés.
+      </div>
+    </div>
+  </div>
+</footer>

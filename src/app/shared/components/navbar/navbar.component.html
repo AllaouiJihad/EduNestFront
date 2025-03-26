@@ -1,0 +1,48 @@
+<!-- src/app/shared/components/navbar/navbar.component.html -->
+<nav class="navbar">
+  <div class="container">
+    <div class="navbar-brand">
+      <a [routerLink]="['/']" class="logo">
+        <span class="logo-icon">🏫</span>
+        <span class="logo-text">EduNest</span>
+      </a>
+      <button class="mobile-menu-toggle" (click)="toggleMenu()" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+
+    <div class="navbar-menu" [class.is-active]="isMenuOpen">
+      <div class="navbar-start">
+        <a [routerLink]="['/']" class="navbar-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Accueil</a>
+        <a [routerLink]="['/schools']" class="navbar-item" routerLinkActive="active">Écoles</a>
+        <a [routerLink]="['/contact']" class="navbar-item" routerLinkActive="active">Contact</a>
+      </div>
+
+      <div class="navbar-end">
+        <ng-container *ngIf="(isAuthenticated$ | async); else unauthenticated">
+          <div class="dropdown">
+            <button class="dropdown-trigger">
+              <span>{{ (currentUser$ | async)?.firstName || 'Utilisateur' }}</span>
+              <span class="icon">▼</span>
+            </button>
+            <div class="dropdown-menu">
+              <a [routerLink]="['/dashboard']" class="dropdown-item">Tableau de bord</a>
+              <a [routerLink]="['/favorites']" class="dropdown-item">Mes favoris</a>
+              <a [routerLink]="['/profile']" class="dropdown-item">Mon profil</a>
+              <hr class="dropdown-divider">
+              <a (click)="logout()" class="dropdown-item">Déconnexion</a>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #unauthenticated>
+          <div class="auth-buttons">
+            <a [routerLink]="['/auth/login']" class="login-btn">Connexion</a>
+            <a [routerLink]="['/auth/register']" class="register-btn">Inscription</a>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</nav>

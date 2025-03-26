@@ -1,0 +1,78 @@
+<!-- src/app/features/favorites/favorites.component.html -->
+<app-navbar></app-navbar>
+
+<div class="favorites-page">
+  <div class="container">
+    <div class="page-header">
+      <h1>Mes écoles favorites</h1>
+      <p class="subtitle">Retrouvez ici les écoles que vous avez ajoutées à vos favoris pour y accéder facilement.</p>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+      <app-loading-spinner></app-loading-spinner>
+      <p>Chargement de vos écoles favorites...</p>
+    </div>
+
+    <app-error-alert *ngIf="error" [message]="error"></app-error-alert>
+
+    <div *ngIf="!loading && !error && favoriteSchools.length > 0" class="favorites-grid">
+      <div *ngFor="let favorite of favoriteSchools" class="favorite-card">
+        <div class="favorite-header">
+          <h3 class="school-name">{{ favorite.schoolName }}</h3>
+          <button
+            class="remove-btn"
+            (click)="removeFromFavorites(favorite.schoolId, favorite.schoolName, $event)"
+            aria-label="Retirer des favoris"
+          >
+            &#10005;
+          </button>
+        </div>
+
+        <div class="favorite-content">
+          <div class="school-info">
+            <p class="school-location">
+              <span class="info-label">Lieu:</span> {{ favorite.schoolCity }}
+            </p>
+            <p class="school-category" *ngIf="favorite.categoryName">
+              <span class="info-label">Catégorie:</span> {{ favorite.categoryName }}
+            </p>
+            <div class="school-rating">
+              <span class="info-label">Note:</span>
+              <app-star-rating [rating]="favorite.reviewCount"></app-star-rating>
+              <span class="rating-text">{{ favorite.reviewCount | number:'1.1-1' }}</span>
+            </div>
+            <p class="added-date">
+              <span class="info-label">Ajouté le:</span> {{ favorite.addedDate | date:'dd/MM/yyyy' }}
+            </p>
+          </div>
+
+          <div class="notes-section">
+            <label for="notes-{{favorite.id}}">Mes notes:</label>
+            <textarea
+              id="notes-{{favorite.id}}"
+              rows="3"
+              placeholder="Ajouter des notes personnelles sur cette école..."
+              [value]="favorite.notes || ''"
+              (blur)="updateNotes(favorite, $event)"
+            ></textarea>
+          </div>
+
+          <div class="actions">
+            <a [routerLink]="['/schools', favorite.schoolId]" class="view-btn">
+              Voir l'école
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!loading && favoriteSchools.length === 0 && !error" class="empty-state">
+      <div class="empty-icon">❤️</div>
+      <h2>Aucune école favorite</h2>
+      <p>Vous n'avez pas encore ajouté d'écoles à vos favoris.</p>
+      <a [routerLink]="['/schools']" class="browse-btn">Parcourir les écoles</a>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

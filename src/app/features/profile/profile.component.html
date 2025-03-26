@@ -1,0 +1,248 @@
+<!-- src/app/features/profile/profile.component.html -->
+<app-navbar></app-navbar>
+
+<div class="profile-page">
+  <div class="container">
+    <div class="page-header">
+      <h1>Mon profil</h1>
+      <p class="subtitle">Gérez vos informations personnelles et vos préférences</p>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+      <app-loading-spinner></app-loading-spinner>
+      <p>Chargement de votre profil...</p>
+    </div>
+
+    <app-error-alert *ngIf="error" [message]="error"></app-error-alert>
+
+    <div *ngIf="!loading && !error && userProfile" class="profile-container">
+      <div class="profile-sidebar">
+        <div class="profile-avatar">
+          <div class="avatar" *ngIf="!userProfile.profileImageUrl">
+            {{ getFirstLetter() }}
+          </div>
+          <img
+            *ngIf="userProfile.profileImageUrl"
+            [src]="userProfile.profileImageUrl"
+            [alt]="userProfile.firstName + ' ' + userProfile.lastName"
+            class="avatar-image"
+          >
+        </div>
+        <div class="profile-info">
+          <h3 class="profile-name">{{ userProfile.firstName }} {{ userProfile.lastName }}</h3>
+          <p class="profile-email">{{ userProfile.email }}</p>
+          <p class="profile-role">{{ userProfile.role }}</p>
+          <p class="profile-since">Membre depuis {{ userProfile.createdAt | date:'MMM yyyy' }}</p>
+        </div>
+        <div class="profile-tabs">
+          <button
+            class="tab-button"
+            [class.active]="activeTab === 'info'"
+            (click)="changeTab('info')"
+          >
+            <span class="tab-icon">👤</span>
+            Informations personnelles
+          </button>
+          <button
+            class="tab-button"
+            [class.active]="activeTab === 'password'"
+            (click)="changeTab('password')"
+          >
+            <span class="tab-icon">🔒</span>
+            Mot de passe
+          </button>
+          <button
+            class="tab-button"
+            [class.active]="activeTab === 'preferences'"
+            (click)="changeTab('preferences')"
+          >
+            <span class="tab-icon">⚙️</span>
+            Préférences de notifications
+          </button>
+        </div>
+      </div>
+
+      <div class="profile-content">
+        <!-- Informations personnelles -->
+        <div *ngIf="activeTab === 'info'" class="profile-tab-content">
+          <h2>Informations personnelles</h2>
+          <p class="section-description">Mettez à jour vos informations personnelles</p>
+
+          <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="form">
+            <div class="form-group">
+              <label for="firstName">Prénom</label>
+              <input
+                type="text"
+                id="firstName"
+                formControlName="firstName"
+                placeholder="Votre prénom"
+              >
+              <div *ngIf="profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched" class="error-message">
+                Le prénom est requis
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="lastName">Nom</label>
+              <input
+                type="text"
+                id="lastName"
+                formControlName="lastName"
+                placeholder="Votre nom"
+              >
+              <div *ngIf="profileForm.get('lastName')?.invalid && profileForm.get('lastName')?.touched" class="error-message">
+                Le nom est requis
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                formControlName="email"
+                placeholder="Votre email"
+                [disabled]="true"
+              >
+              <div class="info-text">L'adresse email ne peut pas être modifiée</div>
+            </div>
+
+            <div class="form-group">
+              <label for="profileImageUrl">URL de l'image de profil</label>
+              <input
+                type="text"
+                id="profileImageUrl"
+                formControlName="profileImageUrl"
+                placeholder="https://exemple.com/mon-image.jpg"
+              >
+              <div class="info-text">Laissez vide pour utiliser l'avatar par défaut</div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="submit-btn" [disabled]="profileForm.invalid || loading">
+                Enregistrer les modifications
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Changement de mot de passe -->
+        <div *ngIf="activeTab === 'password'" class="profile-tab-content">
+          <h2>Changer de mot de passe</h2>
+          <p class="section-description">Modifiez votre mot de passe pour sécuriser votre compte</p>
+
+          <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="form">
+            <div class="form-group">
+              <label for="currentPassword">Mot de passe actuel</label>
+              <input
+                type="password"
+                id="currentPassword"
+                formControlName="currentPassword"
+                placeholder="Votre mot de passe actuel"
+              >
+              <div *ngIf="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched" class="error-message">
+                Le mot de passe actuel est requis
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="newPassword">Nouveau mot de passe</label>
+              <input
+                type="password"
+                id="newPassword"
+                formControlName="newPassword"
+                placeholder="Votre nouveau mot de passe"
+              >
+              <div *ngIf="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched" class="error-message">
+                Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="confirmPassword">Confirmer le mot de passe</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                formControlName="confirmPassword"
+                placeholder="Confirmez votre nouveau mot de passe"
+              >
+              <div *ngIf="passwordForm.get('confirmPassword')?.errors?.['passwordMismatch'] && passwordForm.get('confirmPassword')?.touched" class="error-message">
+                Les mots de passe ne correspondent pas
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="submit-btn" [disabled]="passwordForm.invalid || loading">
+                Changer le mot de passe
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Préférences de notifications -->
+        <div *ngIf="activeTab === 'preferences'" class="profile-tab-content">
+          <h2>Préférences de notifications</h2>
+          <p class="section-description">Configurez les notifications que vous souhaitez recevoir</p>
+
+          <form [formGroup]="preferencesForm" (ngSubmit)="savePreferences()" class="form">
+            <div class="form-group checkbox-group">
+              <div class="checkbox-item">
+                <input
+                  type="checkbox"
+                  id="emailNotifications"
+                  formControlName="emailNotifications"
+                >
+                <label for="emailNotifications">Notifications par email</label>
+                <div class="checkbox-description">Recevoir des notifications générales par email</div>
+              </div>
+            </div>
+
+            <div class="form-group checkbox-group">
+              <div class="checkbox-item">
+                <input
+                  type="checkbox"
+                  id="newSchoolAlerts"
+                  formControlName="newSchoolAlerts"
+                >
+                <label for="newSchoolAlerts">Alertes nouvelles écoles</label>
+                <div class="checkbox-description">Être notifié lorsque de nouvelles écoles sont ajoutées</div>
+              </div>
+            </div>
+
+            <div class="form-group checkbox-group">
+              <div class="checkbox-item">
+                <input
+                  type="checkbox"
+                  id="favoriteUpdates"
+                  formControlName="favoriteUpdates"
+                >
+                <label for="favoriteUpdates">Mises à jour sur les favoris</label>
+                <div class="checkbox-description">Recevoir des notifications sur les mises à jour de vos écoles favorites</div>
+              </div>
+            </div>
+
+            <div class="form-group checkbox-group">
+              <div class="checkbox-item">
+                <input
+                  type="checkbox"
+                  id="marketingEmails"
+                  formControlName="marketingEmails"
+                >
+                <label for="marketingEmails">Emails marketing</label>
+                <div class="checkbox-description">Recevoir des offres et des conseils personnalisés</div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="submit-btn" [disabled]="preferencesForm.invalid || loading">
+                Enregistrer les préférences
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

@@ -1,0 +1,264 @@
+/* src/app/shared/components/navbar/navbar.component.scss */
+.navbar {
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 0.75rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .navbar-brand {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
+    .logo {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+
+      .logo-icon {
+        font-size: 1.5rem;
+        margin-right: 0.5rem;
+      }
+
+      .logo-text {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #3b82f6;
+      }
+    }
+
+    .mobile-menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+      flex-direction: column;
+      gap: 5px;
+
+      span {
+        display: block;
+        width: 24px;
+        height: 2px;
+        background-color: #333;
+        transition: all 0.3s ease;
+      }
+    }
+  }
+
+  .navbar-menu {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    margin-left: 2rem;
+
+    .navbar-start, .navbar-end {
+      display: flex;
+      align-items: center;
+    }
+
+    .navbar-item {
+      color: #4b5563;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+      position: relative;
+      transition: color 0.3s ease;
+
+      &:hover, &.active {
+        color: #3b82f6;
+      }
+
+      &.active::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: #3b82f6;
+      }
+    }
+
+    .auth-buttons {
+      display: flex;
+      gap: 1rem;
+
+      .login-btn, .register-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .login-btn {
+        color: #3b82f6;
+        border: 1px solid #3b82f6;
+
+        &:hover {
+          background-color: rgba(59, 130, 246, 0.1);
+        }
+      }
+
+      .register-btn {
+        background-color: #3b82f6;
+        color: white;
+
+        &:hover {
+          background-color: #2563eb;
+        }
+      }
+    }
+
+    .dropdown {
+      position: relative;
+
+      .dropdown-trigger {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: none;
+        border: 1px solid #e5e7eb;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+
+        .icon {
+          font-size: 0.75rem;
+          color: #6b7280;
+        }
+      }
+
+      .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        width: 200px;
+        background-color: white;
+        border-radius: 4px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        margin-top: 0.5rem;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 1000;
+
+        .dropdown-item {
+          display: block;
+          padding: 0.75rem 1rem;
+          color: #4b5563;
+          text-decoration: none;
+          transition: background-color 0.3s ease;
+
+          &:hover {
+            background-color: #f3f4f6;
+            color: #3b82f6;
+          }
+        }
+
+        .dropdown-divider {
+          height: 1px;
+          margin: 0.5rem 0;
+          background-color: #e5e7eb;
+          border: none;
+        }
+      }
+
+      &:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+  }
+}
+
+/* Responsive styles */
+@media screen and (max-width: 1023px) {
+  .navbar {
+    .navbar-brand {
+      .mobile-menu-toggle {
+        display: flex;
+      }
+    }
+
+    .navbar-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background-color: white;
+      flex-direction: column;
+      padding: 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      display: none;
+
+      &.is-active {
+        display: flex;
+      }
+
+      .navbar-start, .navbar-end {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .navbar-start {
+        margin-bottom: 1rem;
+      }
+
+      .navbar-item {
+        padding: 0.75rem 0;
+        width: 100%;
+        text-align: center;
+
+        &.active::after {
+          display: none;
+        }
+      }
+
+      .auth-buttons {
+        flex-direction: column;
+        width: 100%;
+
+        .login-btn, .register-btn {
+          text-align: center;
+          padding: 0.75rem;
+        }
+      }
+
+      .dropdown {
+        width: 100%;
+
+        .dropdown-trigger {
+          width: 100%;
+          justify-content: center;
+        }
+
+        .dropdown-menu {
+          position: static;
+          width: 100%;
+          margin-top: 0;
+          box-shadow: none;
+          opacity: 1;
+          visibility: visible;
+          border: 1px solid #e5e7eb;
+          margin-top: 0.5rem;
+        }
+      }
+    }
+  }
+}
