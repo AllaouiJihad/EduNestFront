@@ -1,8 +1,11 @@
-<div class="stars">
+<div class="star-rating" [attr.aria-label]="'Notation: ' + rating + ' sur 5'">
       <span
         *ngFor="let star of stars; let i = index"
         class="star"
-        [class.filled]="i < filledStars"
-        [class.half-filled]="i === halfStar"
-      >★</span>
+        [class.full]="star === 1"
+        [class.half]="star === 0.5"
+        [class.empty]="star === 0"
+      >
+        {{ star === 1 ? '★' : star === 0.5 ? '★' : '☆' }}
+      </span>
 </div>

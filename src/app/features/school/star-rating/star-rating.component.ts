@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {CommonModule} from "@angular/common";
 
 @Component({
@@ -8,29 +8,31 @@ import {CommonModule} from "@angular/common";
   templateUrl: './star-rating.component.html',
   styleUrl: './star-rating.component.css'
 })
-export class StarRatingComponent {
-  @Input() set rating(value: number) {
-    this._rating = value || 0;
-    this.calculateStars();
-  }
+export class StarRatingComponent implements OnChanges{
+  @Input() rating: number = 0;
+  stars: number[] = [0, 0, 0, 0, 0];
 
-  get rating(): number {
-    return this._rating;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['rating']) {
+      this.calculateStars();
+    }
   }
-
-  private _rating: number = 0;
-  stars: number[] = [0, 1, 2, 3, 4];
-  filledStars: number = 0;
-  halfStar: number = -1;
 
   private calculateStars(): void {
-    this.filledStars = Math.floor(this.rating);
-    const remainder = this.rating - this.filledStars;
+    this.stars = [];
 
-    if (remainder >= 0.5) {
-      this.halfStar = this.filledStars;
-    } else {
-      this.halfStar = -1;
+    // Limiter la notation entre 0 et 5
+    const rating = Math.max(0, Math.min(5, this.rating));
+
+    // Calculer les étoiles pleines, demi et vides
+    for (let i = 0; i < 5; i++) {
+      if (rating >= i + 1) {
+        this.stars.push(1); // Étoile pleine
+      } else if (rating >= i + 0.5) {
+        this.stars.push(0.5); // Demi-étoile
+      } else {
+        this.stars.push(0); // Étoile vide
+      }
     }
   }
 }

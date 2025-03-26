@@ -5,13 +5,15 @@ export interface SearchResponse<T> {
     pageSize: number;
     sort: {
       sorted: boolean;
+      unsorted?: boolean; // Propriété optionnelle ajoutée
     }
   };
   totalElements: number;
   totalPages: number;
   last: boolean;
   first: boolean;
-  size: number;
-  number: number;
-  numberOfElements: number;
-  empty: boolean;}
+  size?: number;
+  number?: number;
+  numberOfElements?: number;
+  empty: boolean;
+}

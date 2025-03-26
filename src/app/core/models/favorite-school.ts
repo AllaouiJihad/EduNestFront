@@ -6,4 +6,5 @@ export interface FavoriteSchool {
   categoryName: string;
   notes: string;
   addedDate: string;
+  reviewCount: number;
 }

@@ -1,50 +1,47 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
+import { authGuard, publicGuard } from './core/guards/auth.guard';
 import { AUTH_ROUTES } from './features/auth/routes';
-import {SchoolSearchComponent} from "./features/school/school-search/school-search.component";
-import {SchoolDetailsComponent} from "./features/school/school-details/school-details.component";
-import {SchoolComparisonComponent} from "./features/school/school-comparison/school-comparison.component";
-import {HomeComponent} from "./features/home/home/home.component";
-
-function AuthGuard() {
-
-}
 
 export const routes: Routes = [
   // Routes d'authentification
   ...AUTH_ROUTES,
   {
     path: '',
-    component: HomeComponent,
-    // redirectTo: '/schools',
-    pathMatch: 'full'
+    loadComponent: () => import('./features/home/home/home.component').then(m => m.HomeComponent)
   },
   {
     path: 'schools',
-    component: SchoolSearchComponent
+    loadComponent: () => import('./features/school/school-list/school-list.component').then(m => m.SchoolListComponent)
   },
   {
     path: 'schools/:id',
-    component: SchoolDetailsComponent
+    loadComponent: () => import('./features/school/school-details/school-details.component').then(m => m.SchoolDetailsComponent)
   },
-  {
-    path: 'comparison',
-    component: SchoolComparisonComponent,
-    canActivate: [AuthGuard] // Assurez-vous que l'utilisateur est connecté
-  },
-
-  // Routes protégées
   {
     path: 'dashboard',
-    canActivate: [authGuard],
     loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
-    title: 'Tableau de bord - EduNest'
+    canActivate: [authGuard]
   },
-
-  // Route 404
+  {
+    path: 'favorites',
+    loadComponent: () => import('./features/school/favorites/favorites.component').then(m => m.FavoritesComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'profile',
+    loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'register-school',
+    loadComponent: () => import('./features/school/register-school/register-school.component').then(m => m.RegisterSchoolComponent)
+  },
+  {
+    path: 'compare',
+    loadComponent: () => import('./features/school/school-comparison/school-comparison.component').then(m => m.SchoolComparisonComponent)
+  },
   {
     path: '**',
-    loadComponent: () => import('./features/not-found/not-found.component').then(m => m.NotFoundComponent),
-    title: 'Page non trouvée - EduNest'
+    redirectTo: ''
   }
 ];

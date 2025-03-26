@@ -23,9 +23,13 @@ export interface PasswordResetRequest {
 }
 
 export interface UserProfile {
-  id: number;
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
   role: string;
+  emailVerified: boolean;
+  createdAt: string;
+  profileImageUrl?: string;
 }
+
