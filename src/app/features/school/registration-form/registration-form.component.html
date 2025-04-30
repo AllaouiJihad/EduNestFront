@@ -1,0 +1,238 @@
+<div class="registration-container">
+  <header class="registration-header">
+    <h1>Enregistrer mon établissement</h1>
+    <p>Complétez le formulaire ci-dessous pour soumettre votre demande d'enregistrement d'établissement scolaire.</p>
+  </header>
+
+  <div class="info-section">
+    <app-info-card
+      title="Comment ça marche ?"
+      icon="help_outline"
+      [items]="[
+        'Remplissez toutes les informations requises concernant votre établissement.',
+        'Votre demande sera évaluée par nos équipes. Ce processus peut prendre jusqu\'à 5 jours ouvrables.',
+        'Une fois approuvée, votre établissement sera visible sur notre plateforme.',
+        'Vous pourrez accéder à votre demande et vérifier son statut à tout moment.'
+      ]">
+    </app-info-card>
+  </div>
+
+  <app-loader *ngIf="loading"></app-loader>
+
+  <mat-card class="form-card" *ngIf="!loading">
+    <mat-card-content>
+      <mat-stepper [linear]="true" #stepper labelPosition="end">
+        <!-- Étape 1: Informations générales -->
+        <mat-step [stepControl]="basicInfoForm">
+          <ng-template matStepLabel>Informations générales</ng-template>
+          <form [formGroup]="basicInfoForm">
+            <div class="step-content">
+              <h3>Informations de base de l'établissement</h3>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Nom de l'établissement</mat-label>
+                  <input matInput formControlName="schoolName" placeholder="Ex: École Supérieure de Paris">
+                  <mat-icon matSuffix>school</mat-icon>
+                  <mat-error *ngIf="basicInfoForm.get('schoolName')?.hasError('required')">
+                    Le nom de l'établissement est obligatoire
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Catégorie</mat-label>
+                  <mat-select formControlName="categoryId">
+                    <mat-option *ngFor="let category of categories" [value]="category.id">
+                      {{ category.name }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="basicInfoForm.get('categoryId')?.hasError('required')">
+                    La catégorie est obligatoire
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Description</mat-label>
+                  <textarea matInput formControlName="schoolDescription" rows="4"
+                            placeholder="Décrivez votre établissement, son histoire, ses valeurs..."></textarea>
+                  <mat-error *ngIf="basicInfoForm.get('schoolDescription')?.hasError('required')">
+                    La description est obligatoire
+                  </mat-error>
+                  <mat-error *ngIf="basicInfoForm.get('schoolDescription')?.hasError('minlength')">
+                    La description doit contenir au moins 50 caractères
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="step-actions">
+                <div></div> <!-- Spacer pour l'alignement -->
+                <button mat-flat-button color="primary" matStepperNext [disabled]="basicInfoForm.invalid">
+                  Suivant <mat-icon>navigate_next</mat-icon>
+                </button>
+              </div>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- Étape 2: Coordonnées -->
+        <mat-step [stepControl]="contactInfoForm">
+          <ng-template matStepLabel>Coordonnées</ng-template>
+          <form [formGroup]="contactInfoForm">
+            <div class="step-content">
+              <h3>Coordonnées de l'établissement</h3>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Adresse</mat-label>
+                  <input matInput formControlName="schoolAddress" placeholder="Ex: 123 rue de Paris">
+                  <mat-icon matSuffix>location_on</mat-icon>
+                  <mat-error *ngIf="contactInfoForm.get('schoolAddress')?.hasError('required')">
+                    L'adresse est obligatoire
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row form-row-multiple">
+                <mat-form-field appearance="outline">
+                  <mat-label>Code postal</mat-label>
+                  <input matInput formControlName="schoolPostalCode" placeholder="Ex: 75001">
+                  <mat-error *ngIf="contactInfoForm.get('schoolPostalCode')?.hasError('required')">
+                    Le code postal est obligatoire
+                  </mat-error>
+                  <mat-error *ngIf="contactInfoForm.get('schoolPostalCode')?.hasError('pattern')">
+                    Format de code postal invalide
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Ville</mat-label>
+                  <input matInput formControlName="schoolCity" placeholder="Ex: Paris">
+                  <mat-error *ngIf="contactInfoForm.get('schoolCity')?.hasError('required')">
+                    La ville est obligatoire
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row form-row-multiple">
+                <mat-form-field appearance="outline">
+                  <mat-label>Téléphone</mat-label>
+                  <input matInput formControlName="schoolPhoneNumber" placeholder="Ex: 01 23 45 67 89">
+                  <mat-icon matSuffix>phone</mat-icon>
+                  <mat-error *ngIf="contactInfoForm.get('schoolPhoneNumber')?.hasError('required')">
+                    Le numéro de téléphone est obligatoire
+                  </mat-error>
+                  <mat-error *ngIf="contactInfoForm.get('schoolPhoneNumber')?.hasError('pattern')">
+                    Format de téléphone invalide
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Email</mat-label>
+                  <input matInput formControlName="schoolEmail" placeholder="Ex: contact@ecole.fr" type="email">
+                  <mat-icon matSuffix>email</mat-icon>
+                  <mat-error *ngIf="contactInfoForm.get('schoolEmail')?.hasError('required')">
+                    L'email est obligatoire
+                  </mat-error>
+                  <mat-error *ngIf="contactInfoForm.get('schoolEmail')?.hasError('email')">
+                    Format d'email invalide
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Site web (optionnel)</mat-label>
+                  <input matInput formControlName="schoolWebsite" placeholder="Ex: https://www.ecole.fr">
+                  <mat-icon matSuffix>language</mat-icon>
+                  <mat-error *ngIf="contactInfoForm.get('schoolWebsite')?.hasError('pattern')">
+                    Format d'URL invalide
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="step-actions">
+                <button mat-stroked-button matStepperPrevious>
+                  <mat-icon>navigate_before</mat-icon> Retour
+                </button>
+                <button mat-flat-button color="primary" matStepperNext [disabled]="contactInfoForm.invalid">
+                  Suivant <mat-icon>navigate_next</mat-icon>
+                </button>
+              </div>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- Étape 3: Vérification et soumission -->
+        <mat-step [stepControl]="additionalInfoForm">
+          <ng-template matStepLabel>Finalisation</ng-template>
+          <form [formGroup]="additionalInfoForm">
+            <div class="step-content">
+              <h3>Informations complémentaires et vérification</h3>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Informations complémentaires (optionnel)</mat-label>
+                  <textarea matInput formControlName="additionalInfo" rows="3"
+                            placeholder="Ajoutez ici toute information supplémentaire qui pourrait être utile pour l'évaluation..."></textarea>
+                </mat-form-field>
+              </div>
+
+              <div class="summary-section">
+                <h4>Récapitulatif de la demande</h4>
+                <div class="summary-content">
+                  <div class="summary-item">
+                    <span class="summary-label">Nom :</span>
+                    <span class="summary-value">{{ basicInfoForm.get('schoolName')?.value }}</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="summary-label">Catégorie :</span>
+                    <span class="summary-value">{{ getCategoryName(basicInfoForm.get('categoryId')?.value) }}</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="summary-label">Adresse :</span>
+                    <span class="summary-value">
+                      {{ contactInfoForm.get('schoolAddress')?.value }},
+                      {{ contactInfoForm.get('schoolPostalCode')?.value }}
+                      {{ contactInfoForm.get('schoolCity')?.value }}
+                    </span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="summary-label">Contact :</span>
+                    <span class="summary-value">
+                      {{ contactInfoForm.get('schoolPhoneNumber')?.value }} |
+                      {{ contactInfoForm.get('schoolEmail')?.value }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-disclaimer">
+                <p>
+                  En soumettant cette demande, vous certifiez que toutes les informations fournies sont exactes
+                  et que vous êtes autorisé à représenter cet établissement.
+                </p>
+              </div>
+
+              <div class="step-actions">
+                <button mat-stroked-button matStepperPrevious>
+                  <mat-icon>navigate_before</mat-icon> Retour
+                </button>
+                <button mat-flat-button color="primary"
+                        (click)="submitRegistration()"
+                        [disabled]="submitting || !isFormValid()">
+                  <mat-icon>send</mat-icon> Soumettre la demande
+                </button>
+              </div>
+
+              <mat-progress-bar *ngIf="submitting" mode="indeterminate" class="submit-progress"></mat-progress-bar>
+            </div>
+          </form>
+        </mat-step>
+      </mat-stepper>
+    </mat-card-content>
+  </mat-card>
+</div>

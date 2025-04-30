@@ -1,7 +1,7 @@
 /* src/app/features/schools/school-list/school-list.component.scss */
 .school-list-page {
   padding: 3rem 0;
-  min-height: calc(100vh - 64px - 300px); // Hauteur de la page moins navbar et footer
+  min-height: calc(100vh - 64px - 300px);
 background-color: #f8fafc;
 
   .page-header {
@@ -37,7 +37,6 @@ background-color: #f8fafc;
     }
   }
 
-// Section des filtres
 .filters-section {
   background-color: #fff;
   border-radius: 0.5rem;
@@ -148,7 +147,6 @@ background-color: #f8fafc;
   }
 }
 
-// Section des résultats
 .results-section {
   margin-bottom: 3rem;
 
@@ -279,7 +277,6 @@ background-color: #f8fafc;
           color: #1e293b;
           margin-bottom: 0.5rem;
 
-        // Limiter à 2 lignes et ajouter des points de suspension
         display: -webkit-box;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
@@ -473,7 +470,6 @@ background-color: #f8fafc;
   }
 }
 
-// Section inscription école
 .register-school-section {
   background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
   border-radius: 0.5rem;

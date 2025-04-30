@@ -1,0 +1,55 @@
+<div class="reviews-container">
+  <div *ngIf="loading" class="loader-container">
+    <app-loader></app-loader>
+  </div>
+
+  <div *ngIf="!loading && (!reviewsPage || reviewsPage.content.length === 0)" class="empty-state">
+    <app-empty-state
+      icon="rate_review"
+      title="Aucun avis"
+      message="Vous n'avez pas encore publié d'avis sur des établissements."
+      [actionButton]="true"
+      actionLabel="Découvrir des établissements"
+      (actionClick)="navigateToSchools()">
+    </app-empty-state>
+  </div>
+
+  <div *ngIf="!loading && reviewsPage && reviewsPage.content.length > 0" class="reviews-list">
+    <mat-card *ngFor="let review of reviewsPage.content" class="review-card">
+      <mat-card-header>
+        <mat-card-title>{{ getSchoolName(review) }}</mat-card-title>
+        <mat-card-subtitle>
+          <div class="review-meta">
+            <span class="review-date">Publié le {{ formatDate(review.createdAt) }}</span>
+            <app-star-rating [rating]="review.rating" [readOnly]="true"></app-star-rating>
+          </div>
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <p class="review-content">{{ review.content }}</p>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-button color="primary" (click)="editReview(review)">
+          <mat-icon>edit</mat-icon> Modifier
+        </button>
+        <button mat-button color="warn" (click)="deleteReview(review)">
+          <mat-icon>delete</mat-icon> Supprimer
+        </button>
+        <button mat-button (click)="viewSchool(review.schoolId)">
+          <mat-icon>visibility</mat-icon> Voir l'établissement
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <mat-paginator
+      *ngIf="reviewsPage.totalPages > 1"
+      [length]="reviewsPage.totalElements"
+      [pageSize]="reviewsPage.size"
+      [pageIndex]="reviewsPage.number"
+      [pageSizeOptions]="[5, 10, 25]"
+      (page)="onPageChange($event)">
+    </mat-paginator>
+  </div>
+</div>

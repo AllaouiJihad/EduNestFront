@@ -1,0 +1,93 @@
+<div class="p-6">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-800 mb-2">Tableau de bord administratif</h1>
+    <p class="text-gray-600">Gérez et surveillez l'activité de la plateforme EduNest</p>
+  </div>
+
+  <!-- Statistiques principales -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <a *ngFor="let stat of stats"
+       [routerLink]="stat.route"
+       class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer">
+      <div class="flex items-center">
+        <div [ngClass]="stat.color" class="p-3 rounded-full mr-4">
+          <span class="material-icons">{{ stat.icon }}</span>
+        </div>
+        <div>
+          <p class="text-gray-600 text-sm">{{ stat.title }}</p>
+          <p class="text-2xl font-semibold">{{ stat.value }}</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Graphique des inscriptions -->
+    <div class="bg-white rounded-lg shadow-md p-6 lg:col-span-2">
+      <h2 class="text-lg font-semibold mb-4">Inscriptions d'écoles</h2>
+      <div class="h-64 flex items-end space-x-2">
+        <div *ngFor="let item of registrationData" class="flex flex-col items-center">
+          <div class="bg-indigo-500 hover:bg-indigo-600 transition-colors rounded-t w-14"
+               [style.height.px]="item.count * 5">
+          </div>
+          <span class="text-xs mt-2">{{ item.month }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activités récentes -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-lg font-semibold mb-4">Activités récentes</h2>
+      <div class="space-y-4">
+        <div *ngFor="let activity of recentActivities" class="border-b pb-3 last:border-b-0 last:pb-0">
+          <div class="flex items-start">
+            <div [ngClass]="{
+              'bg-amber-100 text-amber-800': activity.status === 'pending',
+              'bg-green-100 text-green-800': activity.status === 'approved',
+              'bg-red-100 text-red-800': activity.status === 'rejected'
+            }" class="p-2 rounded-full mr-3 mt-1">
+              <span class="material-icons text-sm">
+                {{ activity.type === 'registration' ? 'school' :
+                activity.type === 'approval' ? 'check_circle' : 'cancel' }}
+              </span>
+            </div>
+            <div>
+              <p class="font-medium">{{ activity.school }}</p>
+              <p class="text-sm text-gray-600">
+                {{ activity.type === 'registration' ? 'Demande d\'inscription' :
+                activity.type === 'approval' ? 'Demande approuvée' : 'Demande rejetée' }}
+              </p>
+              <p class="text-xs text-gray-500">{{ activity.date | date:'dd/MM/yyyy' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <a routerLink="/admin/registrations" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 mt-4 text-sm">
+        Voir toutes les activités
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Actions rapides -->
+  <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-lg font-semibold mb-4">Actions rapides</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <a routerLink="/admin/registrations" class="btn btn-primary flex items-center justify-center">
+        <span class="material-icons mr-2">approval</span>
+        Valider les inscriptions
+      </a>
+      <a routerLink="/admin/categories" class="btn btn-secondary flex items-center justify-center">
+        <span class="material-icons mr-2">category</span>
+        Gérer les catégories
+      </a>
+      <a routerLink="/admin/schools" class="btn btn-outline flex items-center justify-center">
+        <span class="material-icons mr-2">school</span>
+        Gérer les écoles
+      </a>
+    </div>
+  </div>
+</div>

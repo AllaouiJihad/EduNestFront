@@ -1,38 +1,22 @@
 import { inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { map, take } from 'rxjs/operators';
+import {ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot} from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
-export const authGuard = () => {
+export const authGuard: CanActivateFn = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  return authService.isAuthenticated$.pipe(
-    take(1),
-    map(isAuthenticated => {
-      if (isAuthenticated) {
-        return true;
-      } else {
-        router.navigate(['/auth/login'], { queryParams: { returnUrl: router.url } });
-        return false;
-      }
-    })
-  );
-};
+  if (authService.isLoggedIn()) {
+    return true;
+  }
 
-export const publicGuard = () => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
+  // Rediriger vers la page de connexion avec l'URL de retour
+  router.navigate(['/auth/login'], {
+    queryParams: { returnUrl: state.url }
+  });
 
-  return authService.isAuthenticated$.pipe(
-    take(1),
-    map(isAuthenticated => {
-      if (!isAuthenticated) {
-        return true;
-      } else {
-        router.navigate(['/dashboard']);
-        return false;
-      }
-    })
-  );
+  return false;
 };

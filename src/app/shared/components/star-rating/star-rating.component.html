@@ -1,0 +1,16 @@
+<div class="star-rating" [class.read-only]="readOnly">
+  <button
+    type="button"
+    class="star-button"
+    *ngFor="let star of stars; let i = index"
+    (click)="onRatingChange(i + 1)"
+    [disabled]="readOnly"
+    [matTooltip]="getTooltipText(i + 1)"
+    matTooltipPosition="above">
+    <mat-icon class="star-icon" [class.filled]="star.filled" [class.half]="star.half">
+      {{ star.half ? 'star_half' : (star.filled ? 'star' : 'star_border') }}
+    </mat-icon>
+  </button>
+
+  <span class="rating-value" *ngIf="showValue">{{ rating | number:'1.1-1' }}</span>
+</div>

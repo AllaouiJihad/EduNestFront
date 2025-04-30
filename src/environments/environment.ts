@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8448'
+  apiUrl: 'http://localhost:8448/api'
 };
 
 // // src/environments/environment.prod.ts

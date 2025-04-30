@@ -1,0 +1,321 @@
+<!-- src/app/features/admin/category-management/category-management.component.html -->
+<div class="p-6">
+  <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800 mb-2">Gestion des catégories</h1>
+      <p class="text-gray-600">Gérez les catégories d'écoles disponibles sur la plateforme</p>
+    </div>
+
+    <div class="mt-4 md:mt-0">
+      <button (click)="openAddModal()" class="btn btn-primary flex items-center">
+        <span class="material-icons mr-2">add</span>
+        Ajouter une catégorie
+      </button>
+    </div>
+  </div>
+
+  <!-- Tableau des catégories -->
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" (click)="onSort('name')">
+            <div class="flex items-center">
+              Nom
+              <span class="material-icons text-gray-400 text-sm ml-1">{{ getSortIcon('name') }}</span>
+            </div>
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" (click)="onSort('type')">
+            <div class="flex items-center">
+              Type
+              <span class="material-icons text-gray-400 text-sm ml-1">{{ getSortIcon('type') }}</span>
+            </div>
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Description
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Statut
+          </th>
+          <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Actions
+          </th>
+        </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let category of categories" class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="font-medium text-gray-900">{{ category.name }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-gray-700">{{ category.type }}</div>
+          </td>
+          <td class="px-6 py-4">
+            <div class="text-gray-700 truncate max-w-xs">{{ category.description || 'Aucune description' }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+              <span
+                [ngClass]="category.active ? 'badge-success' : 'badge-error'"
+                class="badge"
+              >
+                {{ category.active ? 'Active' : 'Inactive' }}
+              </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-center">
+            <div class="flex justify-center space-x-2">
+              <button (click)="toggleCategoryStatus(category)" class="text-indigo-600 hover:text-indigo-900" [title]="category.active ? 'Désactiver' : 'Activer'">
+                <span class="material-icons">{{ category.active ? 'visibility_off' : 'visibility' }}</span>
+              </button>
+              <button (click)="openEditModal(category)" class="text-blue-600 hover:text-blue-900" title="Éditer">
+                <span class="material-icons">edit</span>
+              </button>
+              <button (click)="openDeleteModal(category)" class="text-red-600 hover:text-red-900" title="Supprimer">
+                <span class="material-icons">delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Message si aucune catégorie trouvée -->
+        <tr *ngIf="categories.length === 0">
+          <td colspan="5" class="px-6 py-10 text-center text-gray-500">
+            Aucune catégorie trouvée.
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <app-pagination
+      [currentPage]="page"
+      [pageSize]="size"
+      [totalItems]="totalItems"
+      (pageChange)="onPageChange($event)"
+    ></app-pagination>
+  </div>
+</div>
+
+<!-- Modal d'ajout de catégorie -->
+<div *ngIf="showAddModal" class="fixed inset-0 z-50 overflow-y-auto">
+  <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+      <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+    </div>
+
+    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+    <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="mb-4">
+          <h3 class="text-lg leading-6 font-medium text-gray-900" id="add-modal-title">
+            Ajouter une nouvelle catégorie
+          </h3>
+        </div>
+
+        <form [formGroup]="categoryForm" (ngSubmit)="submitCategoryForm()">
+          <div class="form-group">
+            <label for="add-name" class="form-label">Nom <span class="text-red-500">*</span></label>
+            <input
+              type="text"
+              id="add-name"
+              formControlName="name"
+              class="form-control"
+              placeholder="Nom de la catégorie"
+            >
+            <div *ngIf="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched" class="form-error">
+              <span *ngIf="categoryForm.get('name')?.errors?.['required']">Le nom est requis.</span>
+              <span *ngIf="categoryForm.get('name')?.errors?.['maxlength']">Le nom ne doit pas dépasser 100 caractères.</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="add-type" class="form-label">Type <span class="text-red-500">*</span></label>
+            <input
+              type="text"
+              id="add-type"
+              formControlName="type"
+              class="form-control"
+              placeholder="Type de la catégorie (ex: Primary, Secondary)"
+            >
+            <div *ngIf="categoryForm.get('type')?.invalid && categoryForm.get('type')?.touched" class="form-error">
+              <span *ngIf="categoryForm.get('type')?.errors?.['required']">Le type est requis.</span>
+              <span *ngIf="categoryForm.get('type')?.errors?.['maxlength']">Le type ne doit pas dépasser 50 caractères.</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="add-description" class="form-label">Description</label>
+            <textarea
+              id="add-description"
+              formControlName="description"
+              class="form-control"
+              rows="3"
+              placeholder="Description de la catégorie"
+            ></textarea>
+            <div *ngIf="categoryForm.get('description')?.invalid && categoryForm.get('description')?.touched" class="form-error">
+              <span *ngIf="categoryForm.get('description')?.errors?.['maxlength']">La description ne doit pas dépasser 500 caractères.</span>
+            </div>
+          </div>
+
+          <div class="form-group flex items-center">
+            <input
+              type="checkbox"
+              id="add-active"
+              formControlName="active"
+              class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            >
+            <label for="add-active" class="ml-2 block text-sm text-gray-900">
+              Catégorie active
+            </label>
+          </div>
+        </form>
+      </div>
+      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+        <button
+          (click)="submitCategoryForm()"
+          type="button"
+          class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+          [disabled]="categoryForm.invalid"
+        >
+          Ajouter
+        </button>
+        <button (click)="closeModals()" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+          Annuler
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal d'édition de catégorie -->
+<div *ngIf="showEditModal" class="fixed inset-0 z-50 overflow-y-auto">
+  <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+      <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+    </div>
+
+    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+    <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="mb-4">
+          <h3 class="text-lg leading-6 font-medium text-gray-900" id="edit-modal-title">
+            Modifier la catégorie
+          </h3>
+        </div>
+
+        <form [formGroup]="categoryForm" (ngSubmit)="submitCategoryForm()">
+          <div class="form-group">
+            <label for="edit-name" class="form-label">Nom <span class="text-red-500">*</span></label>
+            <input
+              type="text"
+              id="edit-name"
+              formControlName="name"
+              class="form-control"
+              placeholder="Nom de la catégorie"
+            >
+            <div *ngIf="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched" class="form-error">
+              <span *ngIf="categoryForm.get('name')?.errors?.['required']">Le nom est requis.</span>
+              <span *ngIf="categoryForm.get('name')?.errors?.['maxlength']">Le nom ne doit pas dépasser 100 caractères.</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-type" class="form-label">Type <span class="text-red-500">*</span></label>
+            <input
+              type="text"
+              id="edit-type"
+              formControlName="type"
+              class="form-control"
+              placeholder="Type de la catégorie (ex: Primary, Secondary)"
+            >
+            <div *ngIf="categoryForm.get('type')?.invalid && categoryForm.get('type')?.touched" class="form-error">
+              <span *ngIf="categoryForm.get('type')?.errors?.['required']">Le type est requis.</span>
+              <span *ngIf="categoryForm.get('type')?.errors?.['maxlength']">Le type ne doit pas dépasser 50 caractères.</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-description" class="form-label">Description</label>
+            <textarea
+              id="edit-description"
+              formControlName="description"
+              class="form-control"
+              rows="3"
+              placeholder="Description de la catégorie"
+            ></textarea>
+            <div *ngIf="categoryForm.get('description')?.invalid && categoryForm.get('description')?.touched" class="form-error">
+              <span *ngIf="categoryForm.get('description')?.errors?.['maxlength']">La description ne doit pas dépasser 500 caractères.</span>
+            </div>
+          </div>
+
+          <div class="form-group flex items-center">
+            <input
+              type="checkbox"
+              id="edit-active"
+              formControlName="active"
+              class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            >
+            <label for="edit-active" class="ml-2 block text-sm text-gray-900">
+              Catégorie active
+            </label>
+          </div>
+        </form>
+      </div>
+      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+        <button
+          (click)="submitCategoryForm()"
+          type="button"
+          class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+          [disabled]="categoryForm.invalid"
+        >
+          Mettre à jour
+        </button>
+        <button (click)="closeModals()" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+          Annuler
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de suppression de catégorie -->
+<div *ngIf="showDeleteModal" class="fixed inset-0 z-50 overflow-y-auto">
+  <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+      <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+    </div>
+
+    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+    <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="sm:flex sm:items-start">
+          <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+            <span class="material-icons text-red-600">warning</span>
+          </div>
+          <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+            <h3 class="text-lg leading-6 font-medium text-gray-900" id="delete-modal-title">
+              Supprimer la catégorie
+            </h3>
+            <div class="mt-2">
+              <p class="text-sm text-gray-500">
+                Êtes-vous sûr de vouloir supprimer la catégorie "{{ selectedCategory?.name }}" ? Cette action est irréversible et peut affecter les écoles associées à cette catégorie.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+        <button (click)="deleteCategory()" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+          Supprimer
+        </button>
+        <button (click)="closeModals()" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+          Annuler
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

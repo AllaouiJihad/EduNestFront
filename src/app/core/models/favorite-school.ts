@@ -1,10 +1,11 @@
+
 export interface FavoriteSchool {
   id: number;
   schoolId: number;
   schoolName: string;
-  schoolCity: string;
-  categoryName: string;
-  notes: string;
   addedDate: string;
-  reviewCount: number;
+  notes?: string;
+  categoryName: string;
+  city: string;
+  averageRating?: number;
 }

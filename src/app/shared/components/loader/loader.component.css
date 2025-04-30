@@ -1,0 +1,13 @@
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.loader-text {
+  margin-top: 1rem;
+  color: #757575;
+  font-size: 0.9rem;
+}

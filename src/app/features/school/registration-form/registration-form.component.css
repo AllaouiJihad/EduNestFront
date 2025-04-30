@@ -1,0 +1,231 @@
+.registration-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.registration-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.registration-header h1 {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 2rem;
+}
+
+.registration-header p {
+  color: #7f8c8d;
+  max-width: 600px;
+  margin: 0 auto;
+  font-size: 1rem;
+}
+
+.info-section {
+  margin-bottom: 2rem;
+}
+
+.form-card {
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.step-content {
+  padding: 1.5rem;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.step-content h3 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+  font-size: 1.25rem;
+}
+
+.form-row {
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.form-row-multiple {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .form-row-multiple {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+.form-row-multiple mat-form-field {
+  flex: 1;
+  width: 100%;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* Styles pour le stepper */
+::ng-deep .mat-horizontal-stepper-header-container {
+  margin-bottom: 1rem;
+}
+
+::ng-deep .mat-horizontal-stepper-header {
+  height: 72px;
+  padding: 0 16px;
+}
+
+::ng-deep .mat-stepper-horizontal-line {
+  border-top-width: 2px;
+  border-top-color: rgba(0, 0, 0, 0.12);
+}
+
+::ng-deep .mat-step-header .mat-step-icon {
+  height: 32px;
+  width: 32px;
+  font-size: 16px;
+}
+
+::ng-deep .mat-step-header .mat-step-icon-selected,
+::ng-deep .mat-step-header .mat-step-icon-state-edit {
+  background-color: #3f51b5;
+}
+
+::ng-deep .mat-step-header .mat-step-label {
+  font-size: 14px;
+}
+
+::ng-deep .mat-step-header .mat-step-label.mat-step-label-active {
+  font-weight: 500;
+}
+
+/* Styles pour les champs de formulaire */
+::ng-deep .mat-form-field {
+  width: 100%;
+}
+
+::ng-deep .mat-form-field-wrapper {
+  padding-bottom: 1.25em;
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
+  padding: 0.75em 0;
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+  color: rgba(0, 0, 0, 0.12);
+}
+
+::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+  color: #3f51b5;
+}
+
+::ng-deep .mat-form-field-appearance-outline.mat-form-field-invalid .mat-form-field-outline-thick {
+  color: #f44336;
+}
+
+::ng-deep .mat-error {
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.step-actions {
+  margin-top: auto;
+  padding-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.summary-section {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.summary-section h4 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.summary-content {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.summary-item {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.summary-label {
+  font-weight: 500;
+  min-width: 100px;
+  color: #7f8c8d;
+}
+
+.summary-value {
+  color: #2c3e50;
+  flex: 1;
+}
+
+.form-disclaimer {
+  margin: 1.5rem 0;
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  background-color: #fffde7;
+  padding: 1rem;
+  border-radius: 4px;
+  border-left: 4px solid #ffd54f;
+}
+
+.submit-progress {
+  margin-top: 1rem;
+}
+
+/* Améliorations pour les boutons */
+::ng-deep .mat-flat-button.mat-primary {
+  background-color: #3f51b5;
+}
+
+::ng-deep .mat-flat-button.mat-primary:hover {
+  background-color: #303f9f;
+}
+
+::ng-deep .mat-stroked-button {
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+::ng-deep .mat-button-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+::ng-deep .mat-button-wrapper .mat-icon {
+  margin-left: 4px;
+  margin-right: 4px;
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+}
+
+/* Animation de transition */
+::ng-deep .mat-horizontal-content-container {
+  transition: all 0.3s ease-in-out;
+}

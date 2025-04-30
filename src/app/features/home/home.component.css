@@ -1,0 +1,59 @@
+.home-container {
+  overflow-x: hidden;
+}
+
+.hero-section {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/assets/images/pattern.svg');
+    background-size: cover;
+    opacity: 0.1;
+    z-index: 0;
+  }
+
+  > div {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+@keyframes countUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+   .grid > div {
+     transition: all 0.3s ease;
+
+     &:hover {
+       transform: translateY(-5px);
+     }
+   }
+
+   .city-card {
+     &:hover img {
+       transform: scale(1.1);
+     }
+
+     img {
+       transition: transform 0.3s ease;
+     }
+   }
+
+:host {
+  --hero-gradient-start: #4F46E5;
+  --hero-gradient-end: #7C3AED;
+}

@@ -3,5 +3,7 @@ export interface Review {
   content: string;
   rating: number;
   createdAt: string;
-  memberName: string;
+  schoolId: number;
+  memberId: number;
+  memberName?: string;
 }

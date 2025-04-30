@@ -1,197 +1,291 @@
-<!-- src/app/features/schools/school-comparison/school-comparison.component.html -->
-<app-navbar></app-navbar>
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">Comparaison d'écoles</h1>
+    <p class="text-gray-600">Comparez différentes écoles côte à côte pour faire le meilleur choix</p>
+  </div>
 
-<div class="comparison-page">
-  <div class="container">
-    <div class="page-header">
-      <h1>Comparer des écoles</h1>
-      <p class="subtitle">Comparez jusqu'à {{ maxSchoolsToCompare }} écoles pour faire le meilleur choix</p>
-    </div>
+  <!-- Sélection des écoles -->
+  <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+    <h2 class="text-xl font-semibold mb-4">Sélectionnez les écoles à comparer</h2>
 
-    <div *ngIf="loading" class="loading-container">
-      <app-loading-spinner></app-loading-spinner>
-      <p>Chargement des données de comparaison...</p>
-    </div>
-
-    <app-error-alert *ngIf="error" [message]="error"></app-error-alert>
-
-    <div class="comparison-container">
-      <!-- Sélection des écoles -->
-      <div class="selection-section">
-        <h2>Écoles sélectionnées ({{ selectedSchools.length }}/{{ maxSchoolsToCompare }})</h2>
-
-        <div class="schools-selection">
-          <div *ngFor="let school of selectedSchools" class="selected-school">
-            <div class="school-info">
-              <h3>{{ school.name }}</h3>
-              <p class="school-location">{{ school.city }} {{ school.postalCode ? '(' + school.postalCode + ')' : '' }}</p>
-              <div class="school-rating">
-                <app-star-rating [rating]="school.averageRating"></app-star-rating>
-                <span>{{ school.averageRating | number:'1.1-1' }}</span>
-              </div>
-            </div>
-            <button
-              class="remove-btn"
-              (click)="removeSchoolFromComparison(school.id)"
-              [attr.aria-label]="'Retirer ' + school.name + ' de la comparaison'"
-            >
-              ✕
-            </button>
-          </div>
-
-          <div *ngIf="selectedSchools.length < maxSchoolsToCompare" class="add-school-placeholder">
-            <p>Ajouter une école</p>
-            <form [formGroup]="searchForm" (ngSubmit)="searchSchools()" class="search-form">
-              <div class="search-field">
-                <input
-                  type="text"
-                  formControlName="searchQuery"
-                  placeholder="Rechercher une école..."
-                >
-                <button
-                  type="submit"
-                  class="search-btn"
-                  [disabled]="searchForm.invalid || searchLoading"
-                >
-                  <span *ngIf="!searchLoading">🔍</span>
-                  <app-loading-spinner *ngIf="searchLoading"></app-loading-spinner>
-                </button>
-              </div>
-            </form>
-
-            <div *ngIf="searchResults.length > 0" class="search-results">
-              <div
-                *ngFor="let school of searchResults"
-                class="search-result-item"
-                (click)="addSchoolToComparison(school)"
-                [class.disabled]="isSchoolSelected(school.id)"
-              >
-                <div class="search-school-info">
-                  <h4>{{ school.name }}</h4>
-                  <p>{{ school.city }}</p>
-                </div>
-                <span *ngIf="isSchoolSelected(school.id)" class="already-selected">Sélectionnée</span>
-                <span *ngIf="!isSchoolSelected(school.id)" class="add-icon">+</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div *ngIf="selectedSchools.length < 2" class="selection-help">
-          <p>Sélectionnez au moins 2 écoles pour les comparer</p>
-
-          <div *ngIf="schools.length > 0" class="popular-schools">
-            <h3>Écoles populaires</h3>
-            <div class="schools-grid">
-              <div
-                *ngFor="let school of schools.slice(0, 6)"
-                class="popular-school-card"
-                (click)="addSchoolToComparison(school)"
-                [class.disabled]="isSchoolSelected(school.id)"
-              >
-                <h4>{{ school.name }}</h4>
-                <p>{{ school.city }}</p>
-                <div class="school-rating">
-                  <app-star-rating [rating]="school.averageRating"></app-star-rating>
-                  <span>{{ school.averageRating | number:'1.1-1' }}</span>
-                </div>
-                <span *ngIf="isSchoolSelected(school.id)" class="already-selected">Sélectionnée</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div *ngIf="selectedSchools.length >= 2" class="comparison-actions">
-          <button class="share-btn" (click)="copyShareLink()">
-            Partager cette comparaison
-          </button>
-          <button class="reset-btn" (click)="resetComparison()">
-            Réinitialiser
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngFor="let schoolId of selectedSchoolIds; let i = index" class="border rounded-lg p-4">
+        <div class="flex justify-between items-center mb-4">
+          <span class="font-medium">École {{ i + 1 }}</span>
+          <button
+            *ngIf="selectedSchoolIds.length > 2"
+            (click)="removeSchool(i)"
+            class="text-red-600 hover:text-red-800"
+            title="Supprimer"
+          >
+            <span class="material-icons">close</span>
           </button>
         </div>
+
+        <select
+          [(ngModel)]="selectedSchoolIds[i]"
+          (ngModelChange)="onSchoolSelect(i)"
+          class="form-control"
+          [disabled]="fetchingSchools"
+        >
+          <option [ngValue]="null">Sélectionnez une école</option>
+          <option *ngFor="let school of availableSchools" [ngValue]="school.id">
+            {{ school.name }} ({{ school.city }})
+          </option>
+        </select>
       </div>
 
-      <!-- Tableau de comparaison -->
-      <div *ngIf="comparisonData && selectedSchools.length >= 2" class="comparison-results">
-        <h2>Tableau comparatif</h2>
+      <div *ngIf="selectedSchoolIds.length < 3" class="border border-dashed rounded-lg p-4 flex items-center justify-center">
+        <button (click)="addSchool()" class="flex items-center text-indigo-600 hover:text-indigo-800">
+          <span class="material-icons mr-1">add_circle</span>
+          Ajouter une école
+        </button>
+      </div>
+    </div>
 
-        <div class="comparison-table-container">
-          <table class="comparison-table">
-            <thead>
-            <tr>
-              <th class="criterion-header">Critère</th>
-              <th *ngFor="let school of selectedSchools">
-                {{ school.name }}
-              </th>
-            </tr>
-            </thead>
-            <tbody>
-            <!-- Informations générales -->
-            <tr class="category-row">
-              <td [attr.colspan]="selectedSchools.length + 1">Informations générales</td>
-            </tr>
-            <tr>
-              <td class="criterion-name">Localisation</td>
-              <td *ngFor="let school of selectedSchools">
-                {{ school.city }} {{ school.postalCode ? '(' + school.postalCode + ')' : '' }}
-              </td>
-            </tr>
-            <tr>
-              <td class="criterion-name">Catégorie</td>
-              <td *ngFor="let school of selectedSchools">
-                {{ school.categoryName || 'Non spécifié' }}
-              </td>
-            </tr>
-            <tr>
-              <td class="criterion-name">Note moyenne</td>
-              <td *ngFor="let school of selectedSchools">
-                <div class="rating-display">
-                  <app-star-rating [rating]="school.averageRating"></app-star-rating>
-                  <span>{{ school.averageRating | number:'1.1-1' }}</span>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td class="criterion-name">Nombre d'avis</td>
-              <td *ngFor="let school of selectedSchools">
-                {{ school.reviewCount }}
-              </td>
-            </tr>
+    <div class="mt-6 flex justify-end">
+      <button
+        (click)="clearComparison()"
+        class="btn btn-outline mr-3"
+        [disabled]="!hasSelectedSchools()"
+      >
+        Tout effacer
+      </button>
+    </div>
+  </div>
 
-            <!-- Catégories de comparaison -->
-            <ng-container *ngIf="comparisonData && comparisonData.comparisonMatrix">
-              <ng-container *ngFor="let category of getMatrixCategories()">
-                <tr class="category-row">
-                  <td [attr.colspan]="selectedSchools.length + 1">{{ formatCriterion(category) }}</td>
-                </tr>
-                <tr *ngFor="let value of comparisonData.comparisonMatrix[category]; let i = index">
-                  <td class="criterion-name">{{ category }}</td>
-                  <td *ngFor="let school of selectedSchools; let j = index">
-                    {{ comparisonData.comparisonMatrix[category][j] || 'Non spécifié' }}
-                  </td>
-                </tr>
-              </ng-container>
-            </ng-container>
-            </tbody>
-          </table>
-        </div>
+  <!-- Indicateur de chargement -->
+  <div *ngIf="loading" class="flex justify-center items-center py-12">
+    <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-indigo-600"></div>
+  </div>
 
-        <!-- Liens vers les écoles -->
-        <div class="school-links">
-          <h3>Voir plus de détails</h3>
-          <div class="links-grid">
-            <a
-              *ngFor="let school of selectedSchools"
-              [routerLink]="['/schools', school.id]"
-              class="school-link"
+  <!-- Tableau de comparaison -->
+  <div *ngIf="!loading && hasSelectedSchools()">
+    <!-- Onglets des catégories -->
+    <div class="flex overflow-x-auto mb-6 bg-white rounded-t-lg shadow-md">
+      <button
+        *ngFor="let category of compareCategories"
+        (click)="changeCategory(category.id)"
+        [ngClass]="{
+          'border-b-2 border-indigo-600 text-indigo-800': activeCategory === category.id,
+          'text-gray-600 hover:text-indigo-600': activeCategory !== category.id
+        }"
+        class="flex items-center px-6 py-3 font-medium focus:outline-none transition-colors"
+      >
+        <span class="material-icons mr-2">{{ category.icon }}</span>
+        {{ category.name }}
+      </button>
+    </div>
+
+    <!-- Tableau de comparaison -->
+    <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <!-- En-têtes des écoles -->
+          <thead>
+          <tr class="bg-gray-50">
+            <th class="px-6 py-4 text-left text-sm font-medium text-gray-500 uppercase tracking-wider w-1/4">
+              Caractéristiques
+            </th>
+            <th
+              *ngFor="let school of schools; let i = index"
+              class="px-6 py-4 text-center text-sm font-medium text-gray-500 uppercase tracking-wider"
             >
-              Voir la page de {{ school.name }}
-            </a>
-          </div>
-        </div>
+              <div *ngIf="school" class="flex flex-col items-center">
+                <span class="truncate max-w-xs">{{ school.name }}</span>
+                <a [routerLink]="['/schools', school.id]" class="text-xs text-indigo-600 hover:underline mt-1">
+                  Voir détails
+                </a>
+              </div>
+              <div *ngIf="!school" class="text-gray-400 italic">
+                Non sélectionnée
+              </div>
+            </th>
+          </tr>
+          </thead>
+
+          <!-- Corps du tableau - Informations générales -->
+          <tbody *ngIf="activeCategory === 'general'" class="bg-white divide-y divide-gray-200">
+          <tr>
+            <td class="px-6 py-4 text-sm font-medium text-gray-900">
+              Nom
+            </td>
+            <td *ngFor="let school of schools" class="px-6 py-4 text-sm text-center text-gray-500">
+              {{ school?.name || '-' }}
+            </td>
+          </tr>
+          <tr>
+            <td class="px-6 py-4 text-sm font-medium text-gray-900">
+              Catégorie
+            </td>
+            <td *ngFor="let school of schools" class="px-6 py-4 text-sm text-center text-gray-500">
+              {{ school?.categoryName || '-' }}
+            </td>
+          </tr>
+          <tr>
+            <td class="px-6 py-4 text-sm font-medium text-gray-900">
+              Description
+            </td>
+            <td *ngFor="let school of schools" class="px-6 py-4 text-sm text-center text-gray-500">
+              <div class="max-h-20 overflow-y-auto">
+                {{ school?.description || '-' }}
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="px-6 py-4 text-sm font-medium text-gray-900">
+              Site web
+            </td>
+            <td *ngFor="let school of schools" class="px-6 py-4 text-sm text-center text-gray-500">
+              <a *ngIf="school?.website" [href]="school.website" target="_blank" class="text-indigo-600 hover:underline">
+                {{ school.website }}
+              </a>
+              <span *ngIf="!school?.website">-</span>
+            </td>
+          </tr>
+          </tbody>
+
+          <!-- Corps du tableau - Localisation -->
+          <tbody *ngIf="activeCategory === 'location'" class="bg-white divide-y divide-gray-200">
+          <tr>
+            <td class="px-6 py-4 text-sm font-medium text-gray-900">
+              Adresse
+            </td>
+            <td *ngFor="let school of schools" class="px-6 py-4 text-sm text-center text-gray-500">
+              {{ school?.address || '-' }}
+            </td>
+          </tr>
+          <tr>
+            <td class="px-6 py-4 text-sm font-medium text-gray-900">
+              Ville
+            </td>
+            <td *ngFor="let school of schools" class="px-6 py-4 text-sm text-center text-gray-500">
+              {{ school?.city || '-' }}
+            </td>
+          </tr>
+          <tr>
+            <td class="px-6 py-4 text-sm font-medium text-gray-900">
+              Code postal
+            </td>
+            <td *ngFor="let school of schools" class="px-6 py-4 text-sm text-center text-gray-500">
+              {{ school?.postalCode || '-' }}
+            </td>
+          </tr>
+          <tr>
+            <td class="px-6 py-4 text-sm font-medium text-gray-900">
+              Carte
+            </td>
+            <td *ngFor="let school of schools" class="px-6 py-4 text-center">
+              <a
+                *ngIf="school?.address"
+                [href]="getMapUrl(school)"
+                target="_blank"
+                class="btn btn-outline btn-sm"
+              >
+                <span class="material-icons text-sm mr-1">map</span>
+                Voir sur Google Maps
+              </a>
+              <span *ngIf="!school?.address" class="text-gray-500 text-sm">-</span>
+            </td>
+          </tr>
+          </tbody>
+
+          <!-- Corps du tableau - Évaluations -->
+          <tbody *ngIf="activeCategory === 'ratings'" class="bg-white divide-y divide-gray-200">
+          <tr>
+            <td class="px-6 py-4 text-sm font-medium text-gray-900">
+              Note moyenne
+            </td>
+            <td *ngFor="let school of schools; let i = index" [ngClass]="compareRatings(schools)[i]" class="px-6 py-4 text-sm text-center">
+              <div *ngIf="school?.reviews?.length" class="flex justify-center">
+                <app-star-rating
+                  [rating]="getAverageRating(school)"
+                  [showRating]="true">
+                </app-star-rating>
+              </div>
+              <span *ngIf="!school?.reviews?.length" class="text-gray-500">Aucun avis</span>
+            </td>
+          </tr>
+          <tr>
+            <td class="px-6 py-4 text-sm font-medium text-gray-900">
+              Nombre d'avis
+            </td>
+            <td *ngFor="let school of schools; let i = index" [ngClass]="compareReviewCount(schools)[i]" class="px-6 py-4 text-sm text-center">
+              {{ school?.reviews?.length || 0 }}
+            </td>
+          </tr>
+          <tr>
+            <td class="px-6 py-4 text-sm font-medium text-gray-900">
+              Avis récents
+            </td>
+            <td *ngFor="let school of schools" class="px-6 py-4 text-sm">
+              <div *ngIf="school?.reviews?.length" class="max-h-40 overflow-y-auto">
+                <div *ngFor="let review of (school.reviews || []).slice(0, 3)" class="mb-3 p-2 bg-gray-50 rounded">                  <div class="flex items-center mb-1">
+                    <app-star-rating [rating]="review.rating" [size]="3"></app-star-rating>
+                  </div>
+                  <p class="text-gray-600 text-xs">{{ review.content }}</p>
+                </div>
+              </div>
+              <span *ngIf="!school?.reviews?.length" class="text-gray-500">Aucun avis</span>
+            </td>
+          </tr>
+          </tbody>
+
+          <!-- Corps du tableau - Contact -->
+          <tbody *ngIf="activeCategory === 'contact'" class="bg-white divide-y divide-gray-200">
+          <tr>
+            <td class="px-6 py-4 text-sm font-medium text-gray-900">
+              Email
+            </td>
+            <td *ngFor="let school of schools" class="px-6 py-4 text-sm text-center text-gray-500">
+              <a *ngIf="school?.email" [href]="'mailto:' + school.email" class="text-indigo-600 hover:underline">
+                {{ school.email }}
+              </a>
+              <span *ngIf="!school?.email">-</span>
+            </td>
+          </tr>
+          <tr>
+            <td class="px-6 py-4 text-sm font-medium text-gray-900">
+              Téléphone
+            </td>
+            <td *ngFor="let school of schools" class="px-6 py-4 text-sm text-center text-gray-500">
+              <a *ngIf="school?.phoneNumber" [href]="'tel:' + school.phoneNumber" class="text-indigo-600 hover:underline">
+                {{ school.phoneNumber }}
+              </a>
+              <span *ngIf="!school?.phoneNumber">-</span>
+            </td>
+          </tr>
+          <tr>
+            <td class="px-6 py-4 text-sm font-medium text-gray-900">
+              Contact direct
+            </td>
+            <td *ngFor="let school of schools" class="px-6 py-4 text-center">
+              <a
+                *ngIf="school?.id"
+                [routerLink]="['/schools', school.id]"
+                [fragment]="'contact'"
+                class="btn btn-primary btn-sm"
+              >
+                Contacter
+              </a>
+              <span *ngIf="!school?.id" class="text-gray-500 text-sm">-</span>
+            </td>
+          </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
-</div>
 
-<app-footer></app-footer>
+  <!-- Message si aucune école sélectionnée -->
+  <div *ngIf="!loading && !hasSelectedSchools()" class="bg-white rounded-lg shadow-md p-8 text-center">
+    <div class="flex flex-col items-center">
+      <span class="material-icons text-gray-400 text-5xl mb-4">compare</span>
+      <h3 class="text-xl font-semibold text-gray-700 mb-2">Aucune école sélectionnée</h3>
+      <p class="text-gray-600 mb-6">Veuillez sélectionner au moins une école pour commencer la comparaison.</p>
+      <a routerLink="/schools" class="btn btn-primary">
+        Parcourir les écoles
+      </a>
+    </div>
+  </div>
+</div>

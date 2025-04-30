@@ -1,0 +1,122 @@
+<div class="requests-container">
+  <header class="requests-header">
+    <h1>Mes demandes d'enregistrement</h1>
+    <p>Consultez l'état de vos demandes d'enregistrement d'établissement.</p>
+  </header>
+
+  <div class="requests-actions">
+    <button mat-raised-button color="primary" routerLink="/school-registration">
+      <mat-icon>add</mat-icon> Nouvelle demande
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loader-container">
+    <app-loader></app-loader>
+  </div>
+
+  <div *ngIf="!loading && error" class="error-state">
+    <app-empty-state
+      icon="error_outline"
+      title="Erreur de chargement"
+      message="Une erreur est survenue lors du chargement des demandes. Veuillez réessayer."
+      [actionButton]="true"
+      actionLabel="Réessayer"
+      (actionClick)="loadRequests()">
+    </app-empty-state>
+  </div>
+
+  <div *ngIf="!loading && !error && requests.length === 0" class="empty-state">
+    <app-empty-state
+      icon="school"
+      title="Aucune demande"
+      message="Vous n'avez pas encore soumis de demande d'enregistrement d'établissement."
+      [actionButton]="true"
+      actionLabel="Créer une demande"
+      actionLink="/school-registration">
+    </app-empty-state>
+  </div>
+
+  <div *ngIf="!loading && !error && requests.length > 0" class="requests-list">
+    <mat-card *ngFor="let request of requests" class="request-card">
+      <mat-card-header>
+        <mat-card-title>{{ request.schoolName }}</mat-card-title>
+        <mat-card-subtitle>
+          <div class="request-meta">
+            <span class="request-date">Soumise le {{ formatDate(request.submittedAt) }}</span>
+            <mat-chip [ngClass]="getStatusClass(request.status)">
+              {{ getStatusLabel(request.status) }}
+            </mat-chip>
+          </div>
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div *ngIf="request.status === 'APPROVED'" class="approved-message">
+          <mat-icon>check_circle</mat-icon>
+          <p>Votre demande a été approuvée ! Votre établissement est maintenant visible sur notre plateforme.</p>
+        </div>
+
+        <div *ngIf="request.status === 'REJECTED'" class="rejected-message">
+          <mat-icon>error</mat-icon>
+          <p>Votre demande a été refusée.</p>
+
+          <mat-divider></mat-divider>
+
+          <div class="admin-notes" *ngIf="request.adminReviewNotes">
+            <h4>Commentaires de l'administrateur :</h4>
+            <p>{{ request.adminReviewNotes }}</p>
+          </div>
+        </div>
+
+        <div *ngIf="request.status === 'PENDING'" class="pending-message">
+          <mat-icon>hourglass_empty</mat-icon>
+          <p>Votre demande est en cours d'examen par nos équipes. Vous recevrez une notification par email lorsqu'elle sera traitée.</p>
+        </div>
+
+        <div class="request-details" *ngIf="schoolInfoMap[request.id]">
+          <mat-divider></mat-divider>
+          <h4 class="details-title">Informations de l'établissement</h4>
+          <div class="details-content">
+            <div class="detail-item">
+              <mat-icon>location_on</mat-icon>
+              <span>{{ schoolInfoMap[request.id].location }}</span>
+            </div>
+            <div class="detail-item">
+              <mat-icon>category</mat-icon>
+              <span>{{ schoolInfoMap[request.id].category }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="request-dates">
+          <div>
+            <span class="date-label">Date de soumission :</span>
+            <span class="date-value">{{ formatDate(request.submittedAt) }}</span>
+          </div>
+
+          <div *ngIf="request.reviewedAt">
+            <span class="date-label">Date de traitement :</span>
+            <span class="date-value">{{ formatDate(request.reviewedAt) }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-button color="primary" *ngIf="request.status === 'REJECTED'"
+                routerLink="/school-registration" [queryParams]="{resubmit: request.id}">
+          <mat-icon>refresh</mat-icon> Soumettre à nouveau
+        </button>
+
+        <button mat-button color="primary" *ngIf="request.status === 'APPROVED' && schoolIdMap[request.id]"
+                [routerLink]="['/schools', schoolIdMap[request.id]]">
+          <mat-icon>visibility</mat-icon> Voir l'établissement
+        </button>
+
+        <button mat-button color="accent" matTooltip="Contacter l'administration"
+                (click)="openSupportDialog(request)">
+          <mat-icon>contact_support</mat-icon> Support
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

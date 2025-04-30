@@ -1,11 +1,26 @@
-<div class="star-rating" [attr.aria-label]="'Notation: ' + rating + ' sur 5'">
-      <span
-        *ngFor="let star of stars; let i = index"
-        class="star"
-        [class.full]="star === 1"
-        [class.half]="star === 0.5"
-        [class.empty]="star === 0"
+<div class="star-rating" [class.read-only]="!interactive || readOnly">
+  <div class="stars-container">
+    <button
+      type="button"
+      class="star-button"
+      *ngFor="let star of stars; let i = index"
+      (click)="onRatingChange(i + 1)"
+      [disabled]="!interactive || readOnly"
+      [matTooltip]="getTooltipText(i + 1)"
+      matTooltipPosition="above">
+      <mat-icon
+        class="star-icon"
+        [class.filled]="star.filled"
+        [class.half]="star.half"
+        [ngStyle]="{'font-size': getIconSize() + 'rem', 'height': getIconSize() + 'rem', 'width': getIconSize() + 'rem'}"
       >
-        {{ star === 1 ? '★' : star === 0.5 ? '★' : '☆' }}
-      </span>
+        {{ star.half ? 'star_half' : (star.filled ? 'star' : 'star_border') }}
+      </mat-icon>
+    </button>
+  </div>
+
+  <div class="rating-info" *ngIf="showRating || showCount">
+    <span class="rating-value" *ngIf="showRating">{{ rating | number:'1.1-1' }}</span>
+    <span class="rating-count" *ngIf="showCount">({{ count }})</span>
+  </div>
 </div>

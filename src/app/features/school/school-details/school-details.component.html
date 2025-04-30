@@ -1,98 +1,490 @@
-<div class="school-details-container">
-  <div *ngIf="loading" class="loading">Chargement...</div>
+<div *ngIf="loading" class="container mx-auto px-4 py-16 flex justify-center">
+  <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-indigo-600"></div>
+</div>
 
-  <div *ngIf="error" class="error-message">{{ error }}</div>
-
-  <div *ngIf="school && !loading" class="school-details">
-    <div class="header">
-      <a routerLink="/schools" class="back-btn">← Retour aux résultats</a>
-      <h1>{{ school.name }}</h1>
-      <div class="category-badge">{{ school.categoryName || 'Catégorie non spécifiée' }}</div>
+<div *ngIf="error" class="container mx-auto px-4 py-16">
+  <div class="bg-white rounded-lg shadow-md p-8 text-center">
+    <div class="flex flex-col items-center">
+      <span class="material-icons text-gray-400 text-5xl mb-4">error</span>
+      <h3 class="text-xl font-semibold text-gray-700 mb-2">École introuvable</h3>
+      <p class="text-gray-600 mb-6">L'école que vous recherchez n'existe pas ou n'est plus disponible.</p>
+      <a routerLink="/schools" class="btn btn-primary">
+        Retour à la liste des écoles
+      </a>
     </div>
+  </div>
+</div>
 
-    <div class="content">
-      <div class="main-info">
-        <div class="image-gallery" *ngIf="school.images && school.images.length > 0">
-          <div class="main-image">
-            <img [src]="school.images[currentImageIndex].url" [alt]="school.images[currentImageIndex].caption || school.name" />
-            <p *ngIf="school.images[currentImageIndex].caption" class="caption">
-              {{ school.images[currentImageIndex].caption }}
-            </p>
+<div *ngIf="!loading && !error && school" class="bg-gray-50 min-h-screen">
+  <!-- Hero section -->
+  <div class="bg-gradient-to-r from-indigo-600 to-indigo-800 text-white py-12">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 class="text-3xl font-bold mb-2">{{ school.name }}</h1>
+          <div class="flex items-center mb-4">
+            <span class="material-icons mr-2">place</span>
+            <span>{{ school.city }}, {{ school.postalCode }}</span>
           </div>
-
-          <div class="gallery-controls" *ngIf="school.images.length > 1">
-            <button (click)="prevImage()" class="gallery-btn prev">‹</button>
-            <div class="gallery-indicators">
-              <span *ngFor="let image of school.images; let i = index"
-                    [class.active]="i === currentImageIndex"
-                    (click)="currentImageIndex = i"></span>
-            </div>
-            <button (click)="nextImage()" class="gallery-btn next">›</button>
+          <div *ngIf="school.reviews && school.reviews.length > 0" class="flex items-center">
+            <app-star-rating [rating]="getAverageRating()" [showRating]="true"></app-star-rating>
+            <span class="ml-2">({{ school.reviews.length }} avis)</span>
           </div>
         </div>
-
-        <div *ngIf="!school.images || school.images.length === 0" class="no-images">
-          Aucune image disponible
-        </div>
-
-        <div class="school-summary">
-          <div class="rating-section">
-            <app-star-rating [rating]="school.averageRating"></app-star-rating>
-            <span class="rating-value">{{ school.averageRating | number: '1.1-1' }}/5</span>
-            <span class="review-count">({{ school.reviewCount }} avis)</span>
-          </div>
-
-          <div class="buttons">
-            <button class="primary-btn" (click)="addToFavorites()">Ajouter aux favoris</button>
-            <a [routerLink]="['/contact', school.id]" class="secondary-btn">Contacter l'école</a>
-          </div>
-        </div>
-
-        <div class="school-description">
-          <h2>Description</h2>
-          <p>{{ school.description || 'Aucune description disponible.' }}</p>
-        </div>
-      </div>
-
-      <div class="side-info">
-        <div class="info-card contact-info">
-          <h3>Coordonnées</h3>
-          <p><strong>Adresse :</strong> {{ school.address }}, {{ school.postalCode }} {{ school.city }}</p>
-          <p><strong>Téléphone :</strong> {{ school.phoneNumber }}</p>
-          <p><strong>Email :</strong> {{ school.email }}</p>
-          <p *ngIf="school.website">
-            <strong>Site web :</strong>
-            <a [href]="school.website" target="_blank" rel="noopener noreferrer">{{ school.website }}</a>
-          </p>
+        <div class="mt-6 md:mt-0 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+          <button
+            (click)="toggleFavorite()"
+            class="btn bg-white text-indigo-700 hover:bg-gray-100 flex items-center"
+          >
+            <span class="material-icons mr-2">{{ isFavorite ? 'favorite' : 'favorite_border' }}</span>
+            {{ isFavorite ? 'Retiré des favoris' : 'Ajouter aux favoris' }}
+          </button>
+          <a
+            routerLink="/schools/compare"
+            [queryParams]="{schools: school.id}"
+            class="btn bg-white text-indigo-700 hover:bg-gray-100 flex items-center"
+          >
+            <span class="material-icons mr-2">compare</span>
+            Comparer
+          </a>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="reviews-section" *ngIf="school.reviews && school.reviews.length > 0">
-      <h2>Avis des membres ({{ school.reviewCount }})</h2>
+  <!-- Navigation par onglets -->
+  <div class="bg-white shadow-md">
+    <div class="container mx-auto px-4">
+      <div class="flex overflow-x-auto">
+        <button
+          (click)="changeTab('about')"
+          [ngClass]="{
+            'border-b-2 border-indigo-600 text-indigo-800': activeTab === 'about',
+            'text-gray-600 hover:text-indigo-600': activeTab !== 'about'
+          }"
+          class="px-6 py-4 font-medium focus:outline-none transition-colors"
+        >
+          À propos
+        </button>
+        <button
+          (click)="changeTab('reviews')"
+          [ngClass]="{
+            'border-b-2 border-indigo-600 text-indigo-800': activeTab === 'reviews',
+            'text-gray-600 hover:text-indigo-600': activeTab !== 'reviews'
+          }"
+          class="px-6 py-4 font-medium focus:outline-none transition-colors"
+        >
+          Avis ({{ school.reviews?.length || 0 }})
+        </button>
+        <button
+          (click)="changeTab('contact')"
+          [ngClass]="{
+            'border-b-2 border-indigo-600 text-indigo-800': activeTab === 'contact',
+            'text-gray-600 hover:text-indigo-600': activeTab !== 'contact'
+          }"
+          class="px-6 py-4 font-medium focus:outline-none transition-colors"
+        >
+          Contact
+        </button>
+      </div>
+    </div>
+  </div>
 
-      <div class="reviews-list">
-        <div *ngFor="let review of school.reviews" class="review-card">
-          <div class="review-header">
-            <div class="reviewer-info">
-              <span class="reviewer-name">{{ review.memberName }}</span>
-              <span class="review-date">{{ review.createdAt | date }}</span>
+  <!-- Contenu principal -->
+  <div class="container mx-auto px-4 py-8">
+    <!-- Section À propos -->
+    <div *ngIf="activeTab === 'about'" id="about">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Informations principales -->
+        <div class="lg:col-span-2 space-y-6">
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4">Description</h2>
+            <p class="text-gray-700">{{ school.description }}</p>
+          </div>
+
+          <!-- Informations complémentaires -->
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4">Informations</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <h3 class="text-lg font-medium mb-2">Catégorie</h3>
+                <p class="text-gray-700">{{ school.categoryName }}</p>
+              </div>
+
+              <div>
+                <h3 class="text-lg font-medium mb-2">Adresse</h3>
+                <p class="text-gray-700">{{ school.address }}</p>
+                <p class="text-gray-700">{{ school.postalCode }} {{ school.city }}</p>
+              </div>
+
+              <div>
+                <h3 class="text-lg font-medium mb-2">Contact</h3>
+                <p class="text-gray-700">
+                  <a *ngIf="school.email" [href]="'mailto:' + school.email" class="text-indigo-600 hover:underline">
+                    {{ school.email }}
+                  </a>
+                </p>
+                <p class="text-gray-700">
+                  <a *ngIf="school.phoneNumber" [href]="'tel:' + school.phoneNumber" class="text-indigo-600 hover:underline">
+                    {{ school.phoneNumber }}
+                  </a>
+                </p>
+              </div>
+
+              <div>
+                <h3 class="text-lg font-medium mb-2">Site web</h3>
+                <p class="text-gray-700">
+                  <a *ngIf="school.website" [href]="school.website" target="_blank" class="text-indigo-600 hover:underline">
+                    {{ school.website }}
+                  </a>
+                </p>
+              </div>
             </div>
-            <div class="review-rating">
-              <app-star-rating [rating]="review.rating"></app-star-rating>
-              <span class="rating-value">{{ review.rating }}/5</span>
+          </div>
+        </div>
+
+        <!-- Carte et infos rapides -->
+        <div class="space-y-6">
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4">Localisation</h2>
+            <!-- Placeholder pour Google Maps (à remplacer par une vraie carte) -->
+            <div class="bg-gray-200 h-64 rounded flex items-center justify-center mb-4">
+              <a
+                [href]="'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(school.address + ', ' + school.city)"
+                target="_blank"
+                class="btn btn-primary"
+              >
+                <span class="material-icons mr-2">map</span>
+                Voir sur Google Maps
+              </a>
+            </div>
+            <div class="text-gray-700">
+              <p>{{ school.address }}</p>
+              <p>{{ school.postalCode }} {{ school.city }}</p>
             </div>
           </div>
 
-          <div class="review-content">
-            <p>{{ review.content }}</p>
+          <div *ngIf="school.reviews && school.reviews.length > 0" class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4">Note et avis</h2>
+            <div class="flex items-center mb-4">
+              <div class="text-4xl font-bold text-indigo-700 mr-3">{{ getAverageRating() | number:'1.1-1' }}</div>
+              <div>
+                <app-star-rating [rating]="getAverageRating()"></app-star-rating>
+                <p class="text-gray-600 text-sm">{{ school.reviews.length }} avis</p>
+              </div>
+            </div>
+            <a (click)="changeTab('reviews')" class="text-indigo-600 hover:underline cursor-pointer">
+              Voir tous les avis
+            </a>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="no-reviews" *ngIf="!school.reviews || school.reviews.length === 0">
-      <p>Aucun avis disponible pour cette école.</p>
+    <!-- Section Avis -->
+    <div *ngIf="activeTab === 'reviews'" id="reviews">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Liste des avis -->
+        <div class="lg:col-span-2">
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-xl font-semibold">Avis ({{ school.reviews?.length || 0 }})</h2>
+              <button (click)="openReviewForm()" class="btn btn-primary">
+                <span class="material-icons mr-2">rate_review</span>
+                Donner mon avis
+              </button>
+            </div>
+
+            <!-- Message si aucun avis -->
+            <div *ngIf="!school.reviews || school.reviews.length === 0" class="text-center py-6">
+              <span class="material-icons text-gray-400 text-5xl mb-4">rate_review</span>
+              <h3 class="text-lg font-semibold text-gray-700 mb-2">Aucun avis pour le moment</h3>
+              <p class="text-gray-600 mb-4">Soyez le premier à donner votre avis sur cette école !</p>
+            </div>
+
+            <!-- Formulaire d'avis (visible si showReviewForm est true) -->
+            <div *ngIf="showReviewForm" class="bg-gray-50 p-4 rounded-lg mb-6">
+              <h3 class="text-lg font-semibold mb-3">Donnez votre avis</h3>
+
+              <form [formGroup]="reviewForm" (ngSubmit)="submitReview()">
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Note</label>
+                  <div class="flex items-center">
+                    <app-star-rating
+                      [rating]="reviewForm.get('rating')?.value || 5"
+                      [interactive]="true"
+                      (ratingChange)="reviewForm.get('rating')?.setValue($event)">
+                    </app-star-rating>
+                  </div>
+                  <p *ngIf="reviewSubmitted && reviewForm.get('rating')?.invalid" class="text-sm text-red-600 mt-1">
+                    Veuillez attribuer une note.
+                  </p>
+                </div>
+
+                <div class="mb-4">
+                  <label for="content" class="block text-sm font-medium text-gray-700 mb-1">Commentaire</label>
+                  <textarea
+                    id="content"
+                    formControlName="content"
+                    rows="4"
+                    class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="Partagez votre expérience avec cette école..."
+                  ></textarea>
+                  <p *ngIf="reviewSubmitted && reviewForm.get('content')?.errors?.['required']" class="text-sm text-red-600 mt-1">
+                    Veuillez saisir un commentaire.
+                  </p>
+                  <p *ngIf="reviewSubmitted && reviewForm.get('content')?.errors?.['minlength']" class="text-sm text-red-600 mt-1">
+                    Votre commentaire doit contenir au moins 10 caractères.
+                  </p>
+                </div>
+
+                <div class="flex justify-end space-x-3">
+                  <button
+                    type="button"
+                    (click)="showReviewForm = false"
+                    class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                  >
+                    Publier
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Message de succès après soumission -->
+            <div *ngIf="reviewSuccess" class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <span class="material-icons text-green-400">check_circle</span>
+                </div>
+                <div class="ml-3">
+                  <p class="text-sm text-green-700">
+                    Votre avis a été publié avec succès. Merci pour votre contribution !
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Liste des avis -->
+            <div *ngIf="reviews.length > 0" class="space-y-6">
+              <div *ngFor="let review of reviews" class="border-b pb-6 last:border-b-0 last:pb-0">
+                <div class="flex items-center mb-2">
+                  <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-800 font-semibold mr-3">
+                    {{ review.memberName ? review.memberName.charAt(0) : 'U' }}
+                  </div>
+                  <div>
+                    <p class="font-medium">{{ review.memberName || 'Utilisateur' }}</p>
+                    <p class="text-gray-500 text-sm">{{ review.createdAt | date:'dd/MM/yyyy' }}</p>
+                  </div>
+                </div>
+
+                <div class="ml-13 pl-13">
+                  <div class="mb-2">
+                    <app-star-rating [rating]="review.rating"></app-star-rating>
+                  </div>
+                  <p class="text-gray-700">{{ review.content }}</p>
+                </div>
+              </div>
+
+              <!-- Bouton pour charger plus d'avis -->
+              <div *ngIf="reviews.length < totalReviews" class="text-center mt-4">
+                <button (click)="loadMoreReviews()" class="text-indigo-600 hover:text-indigo-800 font-medium">
+                  Voir plus d'avis
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Statistiques des avis -->
+        <div *ngIf="school.reviews && school.reviews.length > 0">
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4">Statistiques</h2>
+
+            <div class="flex items-center mb-6">
+              <div class="text-5xl font-bold text-indigo-700 mr-4">{{ getAverageRating() | number:'1.1-1' }}</div>
+              <div>
+                <app-star-rating [rating]="getAverageRating()"></app-star-rating>
+                <p class="text-gray-600 text-sm">{{ school.reviews.length }} avis</p>
+              </div>
+            </div>
+
+            <!-- Distribution des notes -->
+            <div class="space-y-2">
+              <div *ngFor="let count of getRatingDistribution(); let i = index; let last = last" class="flex items-center">
+                <div class="w-16 text-right pr-4">{{ 5 - i }} étoiles</div>
+                <div class="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
+                  <div
+                    class="bg-yellow-400 h-2 rounded-full"
+                    [style.width.%]="getRatingPercentage(count)"
+                  ></div>
+                </div>
+                <div class="w-12 text-left pl-4 text-sm text-gray-600">{{ count }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Contact -->
+    <div *ngIf="activeTab === 'contact'" id="contact">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Formulaire de contact -->
+        <div class="lg:col-span-2">
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-6">Contacter {{ school.name }}</h2>
+
+            <!-- Message de succès après soumission -->
+            <div *ngIf="contactSuccess" class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <span class="material-icons text-green-400">check_circle</span>
+                </div>
+                <div class="ml-3">
+                  <p class="text-sm text-green-700">
+                    Votre message a été envoyé avec succès. L'école vous répondra dans les plus brefs délais.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <form [formGroup]="contactForm" (ngSubmit)="submitContact()">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nom complet</label>
+                  <input
+                    type="text"
+                    id="name"
+                    formControlName="name"
+                    class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="Votre nom"
+                  >
+                  <p *ngIf="contactSubmitted && contactForm.get('name')?.errors?.['required']" class="text-sm text-red-600 mt-1">
+                    Veuillez saisir votre nom.
+                  </p>
+                </div>
+
+                <div>
+                  <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <input
+                    type="email"
+                    id="email"
+                    formControlName="email"
+                    class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="votre.email@exemple.com"
+                  >
+                  <p *ngIf="contactSubmitted && contactForm.get('email')?.errors?.['required']" class="text-sm text-red-600 mt-1">
+                    Veuillez saisir votre email.
+                  </p>
+                  <p *ngIf="contactSubmitted && contactForm.get('email')?.errors?.['email']" class="text-sm text-red-600 mt-1">
+                    Veuillez saisir un email valide.
+                  </p>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Téléphone (optionnel)</label>
+                <input
+                  type="tel"
+                  id="phone"
+                  formControlName="phone"
+                  class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  placeholder="Votre numéro de téléphone"
+                >
+              </div>
+
+              <div class="mb-6">
+                <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                <textarea
+                  id="message"
+                  formControlName="message"
+                  rows="5"
+                  class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  placeholder="Votre message pour l'école..."
+                ></textarea>
+                <p *ngIf="contactSubmitted && contactForm.get('message')?.errors?.['required']" class="text-sm text-red-600 mt-1">
+                  Veuillez saisir votre message.
+                </p>
+                <p *ngIf="contactSubmitted && contactForm.get('message')?.errors?.['minlength']" class="text-sm text-red-600 mt-1">
+                  Votre message doit contenir au moins 10 caractères.
+                </p>
+              </div>
+
+              <div class="flex justify-end">
+                <button
+                  type="submit"
+                  class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Envoyer le message
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Informations de contact -->
+        <div>
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4">Coordonnées</h2>
+
+            <div class="space-y-4">
+              <div class="flex">
+                <span class="material-icons text-indigo-600 mr-3">place</span>
+                <div>
+                  <h3 class="font-medium">Adresse</h3>
+                  <p class="text-gray-700">{{ school.address }}</p>
+                  <p class="text-gray-700">{{ school.postalCode }} {{ school.city }}</p>
+                </div>
+              </div>
+
+              <div class="flex">
+                <span class="material-icons text-indigo-600 mr-3">phone</span>
+                <div>
+                  <h3 class="font-medium">Téléphone</h3>
+                  <p *ngIf="school.phoneNumber" class="text-gray-700">
+                    <a [href]="'tel:' + school.phoneNumber" class="text-indigo-600 hover:underline">
+                      {{ school.phoneNumber }}
+                    </a>
+                  </p>
+                  <p *ngIf="!school.phoneNumber" class="text-gray-500 italic">Non renseigné</p>
+                </div>
+              </div>
+
+              <div class="flex">
+                <span class="material-icons text-indigo-600 mr-3">email</span>
+                <div>
+                  <h3 class="font-medium">Email</h3>
+                  <p *ngIf="school.email" class="text-gray-700">
+                    <a [href]="'mailto:' + school.email" class="text-indigo-600 hover:underline">
+                      {{ school.email }}
+                    </a>
+                  </p>
+                  <p *ngIf="!school.email" class="text-gray-500 italic">Non renseigné</p>
+                </div>
+              </div>
+
+              <div class="flex">
+                <span class="material-icons text-indigo-600 mr-3">language</span>
+                <div>
+                  <h3 class="font-medium">Site web</h3>
+                  <p *ngIf="school.website" class="text-gray-700">
+                    <a [href]="school.website" target="_blank" class="text-indigo-600 hover:underline">
+                      {{ school.website }}
+                    </a>
+                  </p>
+                  <p *ngIf="!school.website" class="text-gray-500 italic">Non renseigné</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -1,140 +1,71 @@
-<div class="school-search-container">
-  <h1>Recherche d'écoles</h1>
-
-  <form (ngSubmit)="handleSubmit()" class="search-form">
-    <div class="form-row">
-      <div class="form-group">
-        <label for="name">Nom de l'école</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          [(ngModel)]="searchParams.name"
-          placeholder="Rechercher par nom"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="city">Ville</label>
-        <input
-          type="text"
-          id="city"
-          name="city"
-          [(ngModel)]="searchParams.city"
-          placeholder="Rechercher par ville"
-        />
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label for="postalCode">Code Postal</label>
-        <input
-          type="text"
-          id="postalCode"
-          name="postalCode"
-          [(ngModel)]="searchParams.postalCode"
-          placeholder="Code postal"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="categoryId">Catégorie</label>
-        <select
-          id="categoryId"
-          name="categoryId"
-          [(ngModel)]="searchParams.categoryId"
-        >
-          <option [ngValue]="undefined">Toutes les catégories</option>
-          <option *ngFor="let category of categories" [ngValue]="category.id">
-            {{ category.name }}
-          </option>
-        </select>
-      </div>
-    </div>
-
-    <button type="submit" class="submit-btn" [disabled]="loading">
-      {{ loading ? 'Recherche en cours...' : 'Rechercher' }}
-    </button>
-  </form>
-
-  <div *ngIf="error" class="error-message">{{ error }}</div>
-
-  <div *ngIf="!loading && results.content.length === 0 && !error" class="no-results">
-    Aucune école trouvée. Veuillez modifier vos critères de recherche.
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">Recherche avancée d'écoles</h1>
+    <p class="text-gray-600">Utilisez les filtres pour trouver rapidement l'école qui répond à vos besoins</p>
   </div>
 
-  <div *ngIf="results.content.length > 0" class="results-container">
-    <div class="results-header">
-      <div class="sort-controls">
-        <span>Trier par :</span>
-        <button
-          (click)="handleSort('name')"
-          [class.active]="searchParams.sortBy === 'name'"
-        >
-          Nom {{ searchParams.sortBy === 'name' ? (searchParams.sortDirection === 'asc' ? '↑' : '↓') : '' }}
-        </button>
-        <button
-          (click)="handleSort('city')"
-          [class.active]="searchParams.sortBy === 'city'"
-        >
-          Ville {{ searchParams.sortBy === 'city' ? (searchParams.sortDirection === 'asc' ? '↑' : '↓') : '' }}
-        </button>
-        <button
-          (click)="handleSort('averageRating')"
-          [class.active]="searchParams.sortBy === 'averageRating'"
-        >
-          Note {{ searchParams.sortBy === 'averageRating' ? (searchParams.sortDirection === 'asc' ? '↑' : '↓') : '' }}
-        </button>
-      </div>
-    </div>
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <!-- Filtres de recherche -->
+    <div class="lg:col-span-1">
+      <app-search-filters
+        [initialFilters]="currentFilters"
+        (filtersChanged)="onFiltersChanged($event)">
+      </app-search-filters>
 
-    <div class="schools-grid">
-      <div *ngFor="let school of results.content" class="school-card">
-        <div class="school-image">
-          <img *ngIf="school.imageUrl" [src]="school.imageUrl" [alt]="school.name" />
-          <div *ngIf="!school.imageUrl" class="no-image">Pas d'image</div>
-        </div>
-
-        <div class="school-info">
-          <h3>{{ school.name }}</h3>
-          <p class="category">{{ school.categoryName || 'Catégorie non spécifiée' }}</p>
-          <p class="location">{{ school.city }} {{ school.postalCode ? '(' + school.postalCode + ')' : '' }}</p>
-
-          <div class="rating">
-            <app-star-rating [rating]="school.averageRating"></app-star-rating>
-            <span class="rating-text">
-              {{ school.averageRating ? (school.averageRating | number: '1.1-1') : 'N/A' }}
-              ({{ school.reviewCount || 0 }} avis)
-            </span>
-          </div>
-        </div>
-
-        <div class="school-actions">
-          <a [routerLink]="['/schools', school.id]" class="details-btn">Voir détails</a>
-          <button class="favorite-btn" (click)="addToFavorites(school.id)">Ajouter aux favoris</button>
+      <!-- Recherche rapide par ville -->
+      <div class="bg-white rounded-lg shadow-md p-4 mt-6">
+        <h3 class="text-lg font-semibold mb-4">Villes populaires</h3>
+        <div class="flex flex-wrap gap-2">
+          <button
+            *ngFor="let city of popularCities"
+            (click)="quickSearchByCity(city)"
+            class="px-3 py-1 bg-gray-100 hover:bg-indigo-100 rounded-full text-sm text-gray-800 transition-colors"
+          >
+            {{ city }}
+          </button>
         </div>
       </div>
     </div>
 
-    <div class="pagination" *ngIf="results.totalPages > 1">
-      <button
-        [disabled]="results.first"
-        (click)="handlePageChange(results.number - 1)"
-      >
-        Précédent
-      </button>
+    <!-- Résultats de recherche -->
+    <div class="lg:col-span-3">
+      <!-- Indicateur de chargement -->
+      <div *ngIf="loading" class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-indigo-600"></div>
+      </div>
 
-      <span class="page-info">
-        Page {{ results.number + 1 }} sur {{ results.totalPages }}
-      </span>
+      <!-- Message si aucun résultat -->
+      <div *ngIf="noResultsFound && !loading" class="bg-white rounded-lg shadow-md p-8 text-center">
+        <div class="flex flex-col items-center">
+          <span class="material-icons text-gray-400 text-5xl mb-4">search_off</span>
+          <h3 class="text-xl font-semibold text-gray-700 mb-2">Aucune école trouvée</h3>
+          <p class="text-gray-600 mb-6">Essayez d'élargir vos critères de recherche pour obtenir plus de résultats.</p>
+        </div>
+      </div>
 
-      <button
-        [disabled]="results.last"
-        (click)="handlePageChange(results.number + 1)"
-      >
-        Suivant
-      </button>
+      <!-- Liste des écoles trouvées -->
+      <div *ngIf="!loading && schools.length > 0">
+        <div class="mb-4 flex justify-between items-center">
+          <p class="text-gray-600">{{ totalItems }} résultats trouvés</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <app-school-card
+            *ngFor="let school of schools"
+            [school]="school">
+          </app-school-card>
+        </div>
+
+        <!-- Pagination -->
+        <div *ngIf="totalItems > size" class="mt-8">
+          <app-pagination
+            [currentPage]="page"
+            [pageSize]="size"
+            [totalItems]="totalItems"
+            (pageChange)="onPageChange($event)"
+          ></app-pagination>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>Notes pour {{ data.schoolName }}</h2>
+<mat-dialog-content>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Notes personnelles</mat-label>
+    <textarea
+      matInput
+      [formControl]="notesControl"
+      placeholder="Ajoutez vos notes personnelles concernant cet établissement..."
+      rows="5">
+        </textarea>
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Annuler</button>
+  <button mat-raised-button color="primary" [mat-dialog-close]="notesControl.value">Enregistrer</button>
+</mat-dialog-actions>

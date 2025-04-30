@@ -3,6 +3,6 @@ import {SchoolImage} from "./school-image";
 import {Review} from "./review";
 
 export interface SchoolDetails extends School {
-  images: SchoolImage[];
-  reviews: Review[];
+  reviews?: Review[];
+  administrator?: { name: string; email: string };
 }

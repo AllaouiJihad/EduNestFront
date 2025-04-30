@@ -1,0 +1,174 @@
+.requests-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.requests-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.requests-header h1 {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.requests-header p {
+  color: #7f8c8d;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.requests-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 0;
+}
+
+.empty-state, .error-state {
+  margin: 3rem 0;
+}
+
+.requests-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.request-card {
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.request-meta {
+  display: flex;
+  align-items: center;
+  margin-top: 0.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.request-date {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+.status-pending {
+  background-color: #ffecb3;
+  color: #ff6f00;
+}
+
+.status-approved {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+}
+
+.status-rejected {
+  background-color: #ffcdd2;
+  color: #c62828;
+}
+
+.approved-message, .rejected-message, .pending-message {
+  display: flex;
+  align-items: flex-start;
+  background-color: #f5f7fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.approved-message {
+  background-color: #e8f5e9;
+}
+
+.rejected-message {
+  background-color: #ffebee;
+}
+
+.pending-message {
+  background-color: #fff8e1;
+}
+
+.approved-message mat-icon, .rejected-message mat-icon, .pending-message mat-icon {
+  margin-right: 0.8rem;
+  font-size: 1.5rem;
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+.approved-message mat-icon {
+  color: #2e7d32;
+}
+
+.rejected-message mat-icon {
+  color: #c62828;
+}
+
+.pending-message mat-icon {
+  color: #ff6f00;
+}
+
+.admin-notes {
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+.admin-notes h4 {
+  font-weight: 500;
+  color: #616161;
+  margin-bottom: 0.5rem;
+}
+
+.request-details {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+}
+
+.details-title {
+  font-weight: 500;
+  color: #616161;
+  margin-bottom: 0.8rem;
+}
+
+.details-content {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #616161;
+}
+
+.detail-item mat-icon {
+  font-size: 1.2rem;
+  height: 1.2rem;
+  width: 1.2rem;
+  color: #757575;
+}
+
+.request-dates {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  color: #616161;
+  font-size: 0.9rem;
+}
+
+.date-label {
+  font-weight: 500;
+  margin-right: 0.5rem;
+}
+
+mat-divider {
+  margin: 1rem 0;
+}

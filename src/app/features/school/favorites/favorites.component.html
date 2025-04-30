@@ -1,78 +1,74 @@
-<!-- src/app/features/favorites/favorites.component.html -->
-<app-navbar></app-navbar>
+<div class="favorites-container">
+  <header class="favorites-header">
+    <h1>Mes Établissements Favoris</h1>
+    <p>Retrouvez ici tous les établissements que vous avez ajoutés à vos favoris.</p>
+  </header>
 
-<div class="favorites-page">
-  <div class="container">
-    <div class="page-header">
-      <h1>Mes écoles favorites</h1>
-      <p class="subtitle">Retrouvez ici les écoles que vous avez ajoutées à vos favoris pour y accéder facilement.</p>
-    </div>
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Rechercher un établissement</mat-label>
+    <input matInput [formControl]="searchControl" placeholder="Nom d'établissement...">
+    <mat-icon matPrefix>search</mat-icon>
+    <button *ngIf="searchControl.value" matSuffix mat-icon-button aria-label="Clear" (click)="searchControl.reset()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-form-field>
 
-    <div *ngIf="loading" class="loading-container">
-      <app-loading-spinner></app-loading-spinner>
-      <p>Chargement de vos écoles favorites...</p>
-    </div>
+  <div *ngIf="loading" class="loader-container">
+    <app-loader></app-loader>
+  </div>
 
-    <app-error-alert *ngIf="error" [message]="error"></app-error-alert>
+  <div *ngIf="!loading && filteredFavorites.length === 0" class="empty-state">
+    <app-empty-state
+      icon="favorite"
+      title="Aucun établissement favori"
+      message="Vous n'avez pas encore ajouté d'établissements à vos favoris, ou aucun ne correspond à votre recherche."
+      [actionButton]="true"
+      actionLabel="Découvrir des établissements"
+      (actionClick)="navigateToSchoolSearch()">
+    </app-empty-state>
+  </div>
 
-    <div *ngIf="!loading && !error && favoriteSchools.length > 0" class="favorites-grid">
-      <div *ngFor="let favorite of favoriteSchools" class="favorite-card">
-        <div class="favorite-header">
-          <h3 class="school-name">{{ favorite.schoolName }}</h3>
-          <button
-            class="remove-btn"
-            (click)="removeFromFavorites(favorite.schoolId, favorite.schoolName, $event)"
-            aria-label="Retirer des favoris"
-          >
-            &#10005;
-          </button>
+  <div *ngIf="!loading && filteredFavorites.length > 0" class="favorites-grid">
+    <mat-card *ngFor="let favorite of filteredFavorites" class="favorite-card">
+      <mat-card-header>
+        <mat-card-title>{{ favorite.schoolName }}</mat-card-title>
+        <mat-card-subtitle>
+          <div class="card-subtitle">
+            <span class="category-tag">{{ favorite.categoryName }}</span>
+            <span class="location"><mat-icon>location_on</mat-icon> {{ favorite.city }}</span>
+          </div>
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="rating-container" *ngIf="favorite.averageRating">
+          <app-star-rating [rating]="favorite.averageRating" [readOnly]="true"></app-star-rating>
         </div>
 
-        <div class="favorite-content">
-          <div class="school-info">
-            <p class="school-location">
-              <span class="info-label">Lieu:</span> {{ favorite.schoolCity }}
-            </p>
-            <p class="school-category" *ngIf="favorite.categoryName">
-              <span class="info-label">Catégorie:</span> {{ favorite.categoryName }}
-            </p>
-            <div class="school-rating">
-              <span class="info-label">Note:</span>
-              <app-star-rating [rating]="favorite.reviewCount"></app-star-rating>
-              <span class="rating-text">{{ favorite.reviewCount | number:'1.1-1' }}</span>
-            </div>
-            <p class="added-date">
-              <span class="info-label">Ajouté le:</span> {{ favorite.addedDate | date:'dd/MM/yyyy' }}
-            </p>
-          </div>
+        <mat-divider></mat-divider>
 
-          <div class="notes-section">
-            <label for="notes-{{favorite.id}}">Mes notes:</label>
-            <textarea
-              id="notes-{{favorite.id}}"
-              rows="3"
-              placeholder="Ajouter des notes personnelles sur cette école..."
-              [value]="favorite.notes || ''"
-              (blur)="updateNotes(favorite, $event)"
-            ></textarea>
-          </div>
-
-          <div class="actions">
-            <a [routerLink]="['/schools', favorite.schoolId]" class="view-btn">
-              Voir l'école
-            </a>
-          </div>
+        <div class="notes-container">
+          <h4>Notes personnelles :</h4>
+          <p *ngIf="favorite.notes">{{ favorite.notes }}</p>
+          <p *ngIf="!favorite.notes" class="no-notes">Aucune note ajoutée</p>
         </div>
-      </div>
-    </div>
 
-    <div *ngIf="!loading && favoriteSchools.length === 0 && !error" class="empty-state">
-      <div class="empty-icon">❤️</div>
-      <h2>Aucune école favorite</h2>
-      <p>Vous n'avez pas encore ajouté d'écoles à vos favoris.</p>
-      <a [routerLink]="['/schools']" class="browse-btn">Parcourir les écoles</a>
-    </div>
+        <div class="date-added">
+          Ajouté le {{ formatDate(favorite.addedDate) }}
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-button color="primary" (click)="viewSchool(favorite.schoolId)">
+          <mat-icon>visibility</mat-icon> Voir
+        </button>
+        <button mat-button color="accent" (click)="editNotes(favorite)">
+          <mat-icon>edit</mat-icon> Notes
+        </button>
+        <button mat-button color="warn" (click)="removeFavorite(favorite)">
+          <mat-icon>favorite</mat-icon> Retirer
+        </button>
+      </mat-card-actions>
+    </mat-card>
   </div>
 </div>
-
-<app-footer></app-footer>

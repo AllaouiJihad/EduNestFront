@@ -1,0 +1,37 @@
+<h2 mat-dialog-title>Contacter le support</h2>
+<mat-dialog-content>
+  <p>Pour toute question concernant votre demande "{{ data.schoolName }}", veuillez remplir ce formulaire:</p>
+
+  <form [formGroup]="supportForm">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Sujet</mat-label>
+      <input matInput formControlName="subject" placeholder="Ex: Question sur ma demande d'enregistrement">
+      <mat-error *ngIf="supportForm.get('subject')?.hasError('required')">
+        Le sujet est obligatoire
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Message</mat-label>
+      <textarea
+        matInput
+        formControlName="message"
+        placeholder="Décrivez votre problème ou votre question..."
+        rows="5">
+          </textarea>
+      <mat-error *ngIf="supportForm.get('message')?.hasError('required')">
+        Le message est obligatoire
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Annuler</button>
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="supportForm.invalid"
+    [mat-dialog-close]="supportForm.value">
+    Envoyer
+  </button>
+</mat-dialog-actions>
